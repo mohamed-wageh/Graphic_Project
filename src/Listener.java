@@ -3,17 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package AlphabetTyping;
 
 import javax.media.opengl.GLEventListener;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 /**
  *
  * @author Tyba
  */
 
-public abstract class Listener implements GLEventListener, KeyListener {
+public abstract class Listener implements GLEventListener, KeyListener, MouseListener, MouseMotionListener {
  
     protected String assetsFolderName = "Assets//Alphabet";
     

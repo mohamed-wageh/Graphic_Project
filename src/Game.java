@@ -1,6 +1,3 @@
-package AlphabetTyping;
-
-
 import com.sun.opengl.util.Animator;
 import com.sun.opengl.util.FPSAnimator;
 
@@ -10,27 +7,28 @@ import java.awt.*;
 
 public class Game extends JFrame {
     public static void main(String[] args) {
-        new Game();
+        SwingUtilities.invokeLater(Game::new);
     }
-    public Game() {
-        GLCanvas glCanvas;
-        Animator animator;
 
-        Listener listener = new GLEventListener();
-        glCanvas = new GLCanvas();
+    public Game() {
+        GLCanvas glCanvas = new GLCanvas();
+        GLEventListener listener = new GLEventListener();
         glCanvas.addGLEventListener(listener);
-        glCanvas.addKeyListener(listener);
+        glCanvas.addMouseListener(listener);
+        glCanvas.addMouseMotionListener(listener);
+
         getContentPane().add(glCanvas, BorderLayout.CENTER);
-        animator = new FPSAnimator(15);
-        animator.add(glCanvas);
+
+        Animator animator = new FPSAnimator(glCanvas, 60);
         animator.start();
 
-        setTitle("Alphabet Typing Challenge");
+        setTitle("Connect 4");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 800);
         setLocationRelativeTo(null);
+        setResizable(false);
         setVisible(true);
         setFocusable(true);
-        glCanvas.requestFocus();
+        glCanvas.requestFocusInWindow();
     }
 }
