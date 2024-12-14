@@ -47,6 +47,7 @@ class Connect4 {
         } else {
             gl.glColor3f(1f, 1f, 1f);
         }
+
         gl.glBegin(GL.GL_LINE_LOOP);
         gl.glVertex2f(widthUnit, heightUnit);
         gl.glVertex2f(WIDTH - widthUnit, heightUnit);
@@ -63,11 +64,11 @@ class Connect4 {
                 if (boardX >= 0 && boardX < boardLength && boardY >= 0 && boardY < boardHeight) {
                     Color color = board[boardX][boardY];
                     if (color == Color.YELLOW) {
-                        gl.glColor3f(0.4f, 0f, 0.6f);
+                        gl.glColor3f(1f, 1f, 0f);
                     } else if (color == Color.RED) {
-                        gl.glColor3f(0.4f, 0f, 0.6f);
+                        gl.glColor3f(1f, 0f, 0f); 
                     } else {
-                        gl.glColor3f(1f, 1f, 1f);
+                        gl.glColor3f(1f, 1f, 1f); 
                     }
                     drawCircleWithShadow(gl, i + widthUnit / 2, j + heightUnit / 2, widthUnit / 2 - 5);
                 }
@@ -75,7 +76,7 @@ class Connect4 {
         }
 
         if (!gameDone) {
-            gl.glColor3f(turn == 0 ? 0.4f : 0.4f, turn == 0 ? 0f : 0f, 0.6f);
+            gl.glColor3f(turn == 0 ? 1f : 1f, turn == 0 ? 1f : 0f, 0f); 
             drawCircleWithShadow(gl, hoverX + widthUnit / 2, heightUnit / 2, widthUnit / 2 - 5);
         } else if (p1 != null && p2 != null) {
             drawWinningLine(gl);
@@ -83,7 +84,7 @@ class Connect4 {
     }
 
     private void drawCircleWithShadow(GL gl, int x, int y, int radius) {
-        gl.glColor3f(0f, 0f, 0f);
+        gl.glColor3f(0f, 0f, 0f); 
         gl.glBegin(GL.GL_TRIANGLE_FAN);
         gl.glVertex2f(x + 3, y - 3);
         for (int i = 0; i <= 360; i++) {
@@ -92,7 +93,7 @@ class Connect4 {
         }
         gl.glEnd();
 
-        gl.glColor3f(0.4f, 0f, 0.6f);
+        gl.glColor3f(0.4f, 0f, 0.6f); 
         gl.glBegin(GL.GL_TRIANGLE_FAN);
         gl.glVertex2f(x, y);
         for (int i = 0; i <= 360; i++) {
@@ -103,7 +104,7 @@ class Connect4 {
     }
 
     private void drawWinningLine(GL gl) {
-        gl.glColor3f(0f, 1f, 0f);
+        gl.glColor3f(0f, 1f, 0f); 
         gl.glLineWidth(5f);
         gl.glBegin(GL.GL_LINES);
         gl.glVertex2f(p1.x, p1.y);
