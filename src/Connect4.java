@@ -15,6 +15,10 @@ class Connect4 {
     private static float animationProgress; // Progress of the animation
     private static Timer timer; // Timer for the turn
     private static TimerTask timerTask; // TimerTask for the turn
+    private static int remainingTime; // Remaining time in seconds
+
+    enum Mode { PLAYER_VS_PLAYER, PLAYER_VS_COMPUTER }
+    private static Mode currentMode;
 
     static {
         int initialWidth = 800;
@@ -33,6 +37,29 @@ class Connect4 {
         players = new Color[]{Color.YELLOW, Color.RED};
         turn = 0;
         animationProgress = 0f;
+        timer = new Timer();
+        remainingTime = 30; // Set initial remaining time to 30 seconds
+        currentMode = Mode.PLAYER_VS_PLAYER; // Default mode
+        startTimer();
+    }
+
+    public void setMode(Mode mode) {
+        currentMode = mode;
+    }
+
+    public void resetGame() {
+        for (Color[] colors : board) {
+            Arrays.fill(colors, Color.WHITE);
+        }
+        turn = 0;
+        gameDone = false;
+        p1 = null;
+        p2 = null;
+        animationProgress = 0f;
+        remainingTime = 30;
+        if (timer != null) {
+            timer.cancel();
+        }
         timer = new Timer();
         startTimer();
     }
@@ -77,6 +104,8 @@ class Connect4 {
         } else if (p1 != null && p2 != null) {
             drawWinningLine(gl); // Draw the winning line if game is done
         }
+
+        drawTimer(gl); // Draw the timer
     }
 
     private void drawCircle(GL gl, int x, int y, int radius) {
@@ -100,6 +129,16 @@ class Connect4 {
         if (animationProgress < 1f) {
             animationProgress += 0.01f; // Increment the animation progress
         }
+    }
+
+    private void drawTimer(GL gl) {
+        String timeText = "Time: " + remainingTime + "s";
+        // Set the color to white for the timer text
+        gl.glColor3f(1f, 1f, 1f);
+        // Draw the timer text at the top of the screen
+        // You can use a text rendering library like GLUT or another method to draw text in OpenGL
+        // For example, using GLUT:
+        // GLUT.glutBitmapString(GLUT.BITMAP_HELVETICA_18, timeText);
     }
 
     public void hover(int x) {
@@ -140,6 +179,10 @@ class Connect4 {
         if (gameDone) return;
         turn = (turn + 1) % players.length;
         resetTimer(); // Reset the timer after a move
+
+        if (currentMode == Mode.PLAYER_VS_COMPUTER && turn == 1) {
+            computerMove();
+        }
     }
 
     private void checkConnect(int x, int y) {
@@ -207,17 +250,66 @@ class Connect4 {
             @Override
             public void run() {
                 if (!gameDone) {
-                    gameDone = true;
-                    System.out.println("Player " + (turn + 1) % players.length + " wins by timeout!");
+                    remainingTime--;
+                    if (remainingTime <= 0) {
+                        gameDone = true;
+                        System.out.println("Player " + (turn + 1) % players.length + " wins by timeout!");
+                    }
                 }
             }
         };
-        timer.schedule(timerTask, 30000); // Schedule the task to run after 30 seconds
+        timer.scheduleAtFixedRate(timerTask, 1000, 1000); // Schedule the task to run every second
     }
 
     private static void resetTimer() {
         timerTask.cancel(); // Cancel the current task
+        remainingTime = 30; // Reset the remaining time to 30 seconds
         startTimer(); // Start a new timer task
+    }
+
+    private void computerMove() {
+        // Simple AI for the computer to make a move
+        for (int col = 0; col < boardLength; col++) {
+            if (board[col][0] == Color.WHITE) {
+                dropPiece(col);
+                break;
+            }
+        }
+    }
+
+    private void dropPiece(int column) {
+        if (board[column][0] != Color.WHITE) return;
+
+        new Thread(() -> {
+            Color color = players[turn];
+            int row = 0;
+            for (int i = 0; i < board[column].length && board[column][i] == Color.WHITE; i++) {
+                row = i;
+                board[column][i] = color;
+                try {
+                    Thread.sleep(200);
+                } catch (Exception ignored) {
+                }
+                board[column][i] = Color.WHITE;
+                if (gameDone) return;
+            }
+            if (gameDone) return;
+            board[column][row] = color;
+            System.out.println("Drop: column = " + column + ", row = " + row + ", color = " + color); // Debugging statement
+            checkConnect(column, row);
+        }).start();
+
+        try {
+            Thread.sleep(100);
+        } catch (Exception ignored) {
+        }
+        if (gameDone) return;
+        turn = (turn + 1) % players.length;
+        resetTimer(); // Reset the timer after a move
+
+        if (currentMode == Mode.PLAYER_VS_COMPUTER && turn == 1) {
+            computerMove();
+        }
     }
 
     static class PointPair {
