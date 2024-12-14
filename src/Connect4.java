@@ -65,14 +65,9 @@ class Connect4 {
     }
 
     public void draw(GL gl) {
-        // Draw the frame for the board
-        if (gameDone) {
-            Color winningColor = players[(turn + 1) % players.length]; // Get the winning player's color
-            gl.glColor3f(winningColor.getRed() / 255f, winningColor.getGreen() / 255f, winningColor.getBlue() / 255f); // Set color to winning player's color
-        } else {
-            gl.glColor3f(1f, 1f, 1f); // Set color to white
-        }
-        gl.glBegin(GL.GL_LINE_LOOP);
+        // Draw the off-white board background
+        gl.glColor3f(0.9f, 0.9f, 0.9f); // Light greyish white color
+        gl.glBegin(GL.GL_QUADS);
         gl.glVertex2f(widthUnit, heightUnit);
         gl.glVertex2f(WIDTH - widthUnit, heightUnit);
         gl.glVertex2f(WIDTH - widthUnit, HEIGHT - heightUnit);
@@ -93,14 +88,14 @@ class Connect4 {
                     } else {
                         gl.glColor3f(1f, 1f, 1f); // White
                     }
-                    drawCircle(gl, i + widthUnit / 2, j + heightUnit / 2, widthUnit / 2 - 5); // Draw circle for each cell
+                    drawCircleWithShadow(gl, i + widthUnit / 2, j + heightUnit / 2, widthUnit / 2 - 5); // Draw circle with shadow
                 }
             }
         }
 
         if (!gameDone) { // Draw hover piece if game is not done
             gl.glColor3f(turn == 0 ? 1f : 1f, turn == 0 ? 1f : 0f, 0f); // Yellow or Red based on turn
-            drawCircle(gl, hoverX + widthUnit / 2, heightUnit / 2, widthUnit / 2 - 5); // Draw hover piece at top of column
+            drawCircleWithShadow(gl, hoverX + widthUnit / 2, heightUnit / 2, widthUnit / 2 - 5); // Draw hover piece at top of column
         } else if (p1 != null && p2 != null) {
             drawWinningLine(gl); // Draw the winning line if game is done
         }
@@ -108,9 +103,21 @@ class Connect4 {
         drawTimer(gl); // Draw the timer
     }
 
-    private void drawCircle(GL gl, int x, int y, int radius) {
+    private void drawCircleWithShadow(GL gl, int x, int y, int radius) {
+        // Draw the shadow (dark gray shadow behind the circle)
+        gl.glColor3f(0.2f, 0.2f, 0.2f); // Dark grey shadow color
         gl.glBegin(GL.GL_TRIANGLE_FAN);
-        gl.glVertex2f(x, y);
+        gl.glVertex2f(x + 2, y - 2); // Slightly offset for shadow effect
+        for (int i = 0; i <= 360; i++) {
+            double angle = Math.toRadians(i);
+            gl.glVertex2f((float) (x + 2 + Math.cos(angle) * radius), (float) (y - 2 + Math.sin(angle) * radius));
+        }
+        gl.glEnd();
+
+        // Draw the main circle
+        gl.glColor3f(1f, 1f, 1f); // White for the empty circles
+        gl.glBegin(GL.GL_TRIANGLE_FAN);
+        gl.glVertex2f(x, y); // Main circle center
         for (int i = 0; i <= 360; i++) {
             double angle = Math.toRadians(i);
             gl.glVertex2f((float) (x + Math.cos(angle) * radius), (float) (y + Math.sin(angle) * radius));
