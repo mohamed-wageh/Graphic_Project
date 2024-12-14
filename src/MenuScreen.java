@@ -1,15 +1,12 @@
-import com.jogamp.newt.event.*;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 
 public class MenuScreen extends JFrame implements GLEventListener, MouseListener {
     private GLCanvas canvas;
     private int selectedButton = -1;
-
     private static final String[] BUTTONS = {"Play 1v1", "Play vs Computer", "Rules", "Quit"};
     private static final int BUTTON_WIDTH = 200;
     private static final int BUTTON_HEIGHT = 50;
@@ -30,7 +27,6 @@ public class MenuScreen extends JFrame implements GLEventListener, MouseListener
         canvas.addMouseListener(this);
 
         getContentPane().add(canvas, BorderLayout.CENTER);
-
         setVisible(true);
     }
 
@@ -104,7 +100,8 @@ public class MenuScreen extends JFrame implements GLEventListener, MouseListener
     private void handleButtonClick(int buttonIndex) {
         switch (buttonIndex) {
             case 0:
-                System.out.println("Starting 1v1 game...");
+                new Connect4().startGame(); // Navigate to Connect4 screen
+                this.dispose();  // Close menu screen
                 break;
             case 1:
                 System.out.println("Starting game vs Computer...");
