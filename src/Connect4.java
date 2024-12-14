@@ -11,10 +11,10 @@ class Connect4 {
     private static int turn;
     private static int hoverX;
     private static boolean gameDone;
-    private static Point p1, p2; // Points for the winning line
-    private static float animationProgress; // Progress of the animation
-    private static Timer timer; // Timer for the turn
-    private static TimerTask timerTask; // TimerTask for the turn
+    private static Point p1, p2;
+    private static float animationProgress;
+    private static Timer timer;
+    private static TimerTask timerTask;
 
     static {
         int initialWidth = 800;
@@ -38,12 +38,11 @@ class Connect4 {
     }
 
     public void draw(GL gl) {
-        // Draw the frame for the board
         if (gameDone) {
-            Color winningColor = players[(turn + 1) % players.length]; // Get the winning player's color
-            gl.glColor3f(winningColor.getRed() / 255f, winningColor.getGreen() / 255f, winningColor.getBlue() / 255f); // Set color to winning player's color
+            Color winningColor = players[(turn + 1) % players.length];
+            gl.glColor3f(winningColor.getRed() / 255f, winningColor.getGreen() / 255f, winningColor.getBlue() / 255f);
         } else {
-            gl.glColor3f(1f, 1f, 1f); // Set color to white
+            gl.glColor3f(1f, 1f, 1f);
         }
         gl.glBegin(GL.GL_LINE_LOOP);
         gl.glVertex2f(widthUnit, heightUnit);
@@ -60,22 +59,22 @@ class Connect4 {
                 if (boardX >= 0 && boardX < boardLength && boardY >= 0 && boardY < boardHeight) {
                     Color color = board[boardX][boardY];
                     if (color == Color.YELLOW) {
-                        gl.glColor3f(1f, 1f, 0f); // Yellow
+                        gl.glColor3f(1f, 1f, 0f);
                     } else if (color == Color.RED) {
-                        gl.glColor3f(1f, 0f, 0f); // Red
+                        gl.glColor3f(1f, 0f, 0f);
                     } else {
-                        gl.glColor3f(1f, 1f, 1f); // White
+                        gl.glColor3f(1f, 1f, 1f);
                     }
-                    drawCircle(gl, i + widthUnit / 2, j + heightUnit / 2, widthUnit / 2 - 5); // Draw circle for each cell
+                    drawCircle(gl, i + widthUnit / 2, j + heightUnit / 2, widthUnit / 2 - 5);
                 }
             }
         }
 
-        if (!gameDone) { // Draw hover piece if game is not done
-            gl.glColor3f(turn == 0 ? 1f : 1f, turn == 0 ? 1f : 0f, 0f); // Yellow or Red based on turn
-            drawCircle(gl, hoverX + widthUnit / 2, heightUnit / 2, widthUnit / 2 - 5); // Draw hover piece at top of column
+        if (!gameDone) {
+            gl.glColor3f(turn == 0 ? 1f : 1f, turn == 0 ? 1f : 0f, 0f);
+            drawCircle(gl, hoverX + widthUnit / 2, heightUnit / 2, widthUnit / 2 - 5);
         } else if (p1 != null && p2 != null) {
-            drawWinningLine(gl); // Draw the winning line if game is done
+            drawWinningLine(gl);
         }
     }
 
@@ -90,7 +89,7 @@ class Connect4 {
     }
 
     private void drawWinningLine(GL gl) {
-        gl.glColor3f(0f, 1f, 0f); // Set color to green for the winning line
+        gl.glColor3f(0f, 1f, 0f);
         gl.glLineWidth(5f);
         gl.glBegin(GL.GL_LINES);
         gl.glVertex2f(p1.x, p1.y);
@@ -98,7 +97,7 @@ class Connect4 {
         gl.glEnd();
 
         if (animationProgress < 1f) {
-            animationProgress += 0.01f; // Increment the animation progress
+            animationProgress += 0.01f;
         }
     }
 
@@ -107,7 +106,7 @@ class Connect4 {
         if (x < widthUnit) x = widthUnit;
         if (x >= WIDTH - widthUnit) x = WIDTH - 2 * widthUnit;
         hoverX = x;
-        System.out.println("Hover: hoverX = " + hoverX); // Debugging statement
+        System.out.println("Hover: hoverX = " + hoverX);
     }
 
     public void drop() {
@@ -129,7 +128,7 @@ class Connect4 {
             }
             if (gameDone) return;
             board[column][row] = color;
-            System.out.println("Drop: column = " + column + ", row = " + row + ", color = " + color); // Debugging statement
+            System.out.println("Drop: column = " + column + ", row = " + row + ", color = " + color);
             checkConnect(column, row);
         }).start();
 
@@ -139,7 +138,7 @@ class Connect4 {
         }
         if (gameDone) return;
         turn = (turn + 1) % players.length;
-        resetTimer(); // Reset the timer after a move
+        resetTimer();
     }
 
     private void checkConnect(int x, int y) {
@@ -151,7 +150,7 @@ class Connect4 {
             p1 = new Point((pair.p1.x + 1) * widthUnit + widthUnit / 2, (pair.p1.y + 1) * heightUnit + heightUnit / 2);
             p2 = new Point((pair.p2.x + 1) * widthUnit + widthUnit / 2, (pair.p2.y + 1) * heightUnit + heightUnit / 2);
             gameDone = true;
-            timer.cancel(); // Stop the timer when the game is done
+            timer.cancel();
         }
     }
 
@@ -159,7 +158,6 @@ class Connect4 {
         Color color = arr[i][j];
         int left, right, up, down;
 
-        // check horizontally left to right
         left = right = i;
         while (left >= 0 && arr[left][j] == color) left--;
         left++;
@@ -169,7 +167,6 @@ class Connect4 {
             return new PointPair(left, j, right, j);
         }
 
-        // check vertically top to bottom
         down = j;
         while (down < arr[i].length && arr[i][down] == color) down++;
         down--;
@@ -177,7 +174,6 @@ class Connect4 {
             return new PointPair(i, j, i, down);
         }
 
-        // check diagonal top left to bottom right
         left = right = i;
         up = down = j;
         while (left >= 0 && up >= 0 && arr[left][up] == color) { left--; up--; }
@@ -188,7 +184,6 @@ class Connect4 {
             return new PointPair(left, up, right, down);
         }
 
-        // check diagonal top right to bottom left
         left = right = i;
         up = down = j;
         while (left >= 0 && down < arr[left].length && arr[left][down] == color) {left--; down++;}
@@ -212,12 +207,12 @@ class Connect4 {
                 }
             }
         };
-        timer.schedule(timerTask, 30000); // Schedule the task to run after 30 seconds
+        timer.schedule(timerTask, 30000);
     }
 
     private static void resetTimer() {
-        timerTask.cancel(); // Cancel the current task
-        startTimer(); // Start a new timer task
+        timerTask.cancel();
+        startTimer();
     }
 
     static class PointPair {
