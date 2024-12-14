@@ -1,3 +1,4 @@
+import com.sun.opengl.util.Animator;
 import com.sun.opengl.util.FPSAnimator;
 import javax.media.opengl.GLCanvas;
 import javax.swing.*;
@@ -21,7 +22,7 @@ public class Game extends JFrame {
 
         getContentPane().add(glCanvas, BorderLayout.CENTER);
 
-        FPSAnimator animator = new FPSAnimator(glCanvas, 60);
+        Animator animator = new FPSAnimator(glCanvas, 60);
         animator.start();
 
         setTitle("Connect 4");
@@ -33,6 +34,7 @@ public class Game extends JFrame {
         setFocusable(true);
         glCanvas.requestFocusInWindow();
 
+        // Add buttons for mode selection
         JPanel buttonPanel = new JPanel();
         JButton playerVsPlayerButton = new JButton("1v1");
         JButton playerVsComputerButton = new JButton("1vComputer");
@@ -42,7 +44,6 @@ public class Game extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 connect4Game.setMode(Connect4.Mode.PLAYER_VS_PLAYER);
                 connect4Game.resetGame();
-                glCanvas.repaint();
             }
         });
 
@@ -51,7 +52,6 @@ public class Game extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 connect4Game.setMode(Connect4.Mode.PLAYER_VS_COMPUTER);
                 connect4Game.resetGame();
-                glCanvas.repaint();
             }
         });
 
@@ -59,6 +59,6 @@ public class Game extends JFrame {
         buttonPanel.add(playerVsComputerButton);
         getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 
-        connect4Game = new Connect4(glCanvas);
+        connect4Game = new Connect4();
     }
 }

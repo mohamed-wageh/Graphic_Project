@@ -16,9 +16,13 @@ class Connect4 {
     private static Timer timer; // Timer for the turn
     private static TimerTask timerTask; // TimerTask for the turn
     private static int remainingTime; // Remaining time in seconds
+    private static int player1Wins, player2Wins; // Track wins for best of 3 and best of 5
+    private static int roundsToWin; // Number of rounds needed to win
 
     enum Mode { PLAYER_VS_PLAYER, PLAYER_VS_COMPUTER }
+    enum Difficulty { EASY, MEDIUM, HARD }
     private static Mode currentMode;
+    private static Difficulty currentDifficulty;
 
     static {
         int initialWidth = 800;
@@ -40,11 +44,23 @@ class Connect4 {
         timer = new Timer();
         remainingTime = 30; // Set initial remaining time to 30 seconds
         currentMode = Mode.PLAYER_VS_PLAYER; // Default mode
+        currentDifficulty = Difficulty.EASY; // Default difficulty
+        player1Wins = 0;
+        player2Wins = 0;
+        roundsToWin = 1; // Default to one round
         startTimer();
     }
 
     public void setMode(Mode mode) {
         currentMode = mode;
+    }
+
+    public void setDifficulty(Difficulty difficulty) {
+        currentDifficulty = difficulty;
+    }
+
+    public void setRoundsToWin(int rounds) {
+        roundsToWin = rounds;
     }
 
     public void resetGame() {
@@ -202,6 +218,24 @@ class Connect4 {
             p2 = new Point((pair.p2.x + 1) * widthUnit + widthUnit / 2, (pair.p2.y + 1) * heightUnit + heightUnit / 2);
             gameDone = true;
             timer.cancel(); // Stop the timer when the game is done
+
+            // Update win counts for best of 3 and best of 5
+            if (turn == 0) {
+                player1Wins++;
+            } else {
+                player2Wins++;
+            }
+
+            // Check if a player has won the series
+            if (player1Wins >= roundsToWin || player2Wins >= roundsToWin) {
+                System.out.println("Player " + (player1Wins >= roundsToWin ? "1" : "2") + " wins the series!");
+                // Reset win counts for a new series
+                player1Wins = 0;
+                player2Wins = 0;
+            } else {
+                // Reset the board for the next round
+                resetGame();
+            }
         }
     }
 
@@ -275,13 +309,122 @@ class Connect4 {
     }
 
     private void computerMove() {
-        // Simple AI for the computer to make a move
+        switch (currentDifficulty) {
+            case EASY:
+                easyMove();
+                break;
+            case MEDIUM:
+                minimaxMove(3); // Depth 3 for medium difficulty
+                break;
+            case HARD:
+                minimaxMove(5); // Depth 5 for hard difficulty
+                break;
+        }
+    }
+
+    private void easyMove() {
+        // Simple random move
+        int col;
+        do {
+            col = (int) (Math.random() * boardLength);
+        } while (board[col][0] != Color.WHITE);
+        dropPiece(col);
+    }
+
+    private void minimaxMove(int depth) {
+        int bestScore = Integer.MIN_VALUE;
+        int bestCol = -1;
         for (int col = 0; col < boardLength; col++) {
             if (board[col][0] == Color.WHITE) {
-                dropPiece(col);
-                break;
+                int row = getNextOpenRow(board, col);
+                board[col][row] = players[turn];
+                int score = minimax(board, depth - 1, false, Integer.MIN_VALUE, Integer.MAX_VALUE);
+                board[col][row] = Color.WHITE;
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestCol = col;
+                }
             }
         }
+        dropPiece(bestCol);
+    }
+
+    private int minimax(Color[][] board, int depth, boolean isMaximizing, int alpha, int beta) {
+        if (depth == 0 || isTerminalNode(board)) {
+            return evaluateBoard(board);
+        }
+
+        if (isMaximizing) {
+            int maxEval = Integer.MIN_VALUE;
+            for (int col = 0; col < boardLength; col++) {
+                if (board[col][0] == Color.WHITE) {
+                    int row = getNextOpenRow(board, col);
+                    board[col][row] = players[turn];
+                    int eval = minimax(board, depth - 1, false, alpha, beta);
+                    board[col][row] = Color.WHITE;
+                    maxEval = Math.max(maxEval, eval);
+                    alpha = Math.max(alpha, eval);
+                    if (beta <= alpha) {
+                        break;
+                    }
+                }
+            }
+            return maxEval;
+        } else {
+            int minEval = Integer.MAX_VALUE;
+            for (int col = 0; col < boardLength; col++) {
+                if (board[col][0] == Color.WHITE) {
+                    int row = getNextOpenRow(board, col);
+                    board[col][row] = players[(turn + 1) % players.length];
+                    int eval = minimax(board, depth - 1, true, alpha, beta);
+                    board[col][row] = Color.WHITE;
+                    minEval = Math.min(minEval, eval);
+                    beta = Math.min(beta, eval);
+                    if (beta <= alpha) {
+                        break;
+                    }
+                }
+            }
+            return minEval;
+        }
+    }
+
+    private int getNextOpenRow(Color[][] board, int col) {
+        for (int row = 0; row < boardHeight; row++) {
+            if (board[col][row] == Color.WHITE) {
+                return row;
+            }
+        }
+        return -1; // Should never happen if called correctly
+    }
+
+    private boolean isTerminalNode(Color[][] board) {
+        // Check for a win or if the board is full
+        for (int col = 0; col < boardLength; col++) {
+            for (int row = 0; row < boardHeight; row++) {
+                if (board[col][row] == Color.WHITE) {
+                    return false;
+                }
+                if (checkWin(col, row)) {
+                    return true;
+                }
+            }
+        }
+        return true;
+    }
+
+    private int evaluateBoard(Color[][] board) {
+        // Evaluate the board and return a score
+        // Positive score for maximizing player, negative for minimizing player
+        int score = 0;
+        // Add your evaluation logic here
+        return score;
+    }
+
+    private boolean checkWin(int col, int row) {
+        // Check if the current move wins the game
+        PointPair pair = search(board, col, row);
+        return pair != null;
     }
 
     private void dropPiece(int column) {

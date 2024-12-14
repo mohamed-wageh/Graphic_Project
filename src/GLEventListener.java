@@ -8,8 +8,8 @@ public class GLEventListener extends Listener {
     private GLU glu = new GLU();
     private Connect4 connect4;
 
-    public GLEventListener() {
-        connect4 = new Connect4();
+    public GLEventListener(Connect4 connect4) {
+        this.connect4 = connect4;
     }
 
     @Override
