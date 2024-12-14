@@ -5,9 +5,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 class Connect4 {
-
-
-    //edit screen from ahmed essam 
     private static final int WIDTH, HEIGHT, widthUnit, heightUnit, boardLength, boardHeight;
     private static Color[][] board;
     private static Color[] players;
@@ -41,14 +38,14 @@ class Connect4 {
     }
 
     public void draw(GL gl) {
-        gl.glClearColor(0.95f, 0.95f, 0.95f, 1.0f); 
-        gl.glClear(GL.GL_COLOR_BUFFER_BIT); 
+        gl.glClearColor(0.4f, 0f, 0.6f, 1.0f);
+        gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 
         if (gameDone) {
             Color winningColor = players[(turn + 1) % players.length];
             gl.glColor3f(winningColor.getRed() / 255f, winningColor.getGreen() / 255f, winningColor.getBlue() / 255f);
         } else {
-            gl.glColor3f(0.8f, 0.8f, 0.8f); 
+            gl.glColor3f(1f, 1f, 1f);
         }
         gl.glBegin(GL.GL_LINE_LOOP);
         gl.glVertex2f(widthUnit, heightUnit);
@@ -57,6 +54,7 @@ class Connect4 {
         gl.glVertex2f(widthUnit, HEIGHT - heightUnit);
         gl.glEnd();
 
+        gl.glColor3f(0.95f, 0.95f, 0.95f);
         for (int i = widthUnit; i <= WIDTH - widthUnit; i += widthUnit) {
             for (int j = heightUnit; j < HEIGHT - heightUnit; j += heightUnit) {
                 int boardX = i / widthUnit - 1;
@@ -65,11 +63,11 @@ class Connect4 {
                 if (boardX >= 0 && boardX < boardLength && boardY >= 0 && boardY < boardHeight) {
                     Color color = board[boardX][boardY];
                     if (color == Color.YELLOW) {
-                        gl.glColor3f(1f, 1f, 0f); 
+                        gl.glColor3f(0.4f, 0f, 0.6f);
                     } else if (color == Color.RED) {
-                        gl.glColor3f(1f, 0f, 0f); 
+                        gl.glColor3f(0.4f, 0f, 0.6f);
                     } else {
-                        gl.glColor3f(1f, 1f, 1f); 
+                        gl.glColor3f(1f, 1f, 1f);
                     }
                     drawCircleWithShadow(gl, i + widthUnit / 2, j + heightUnit / 2, widthUnit / 2 - 5);
                 }
@@ -77,7 +75,7 @@ class Connect4 {
         }
 
         if (!gameDone) {
-            gl.glColor3f(turn == 0 ? 1f : 1f, turn == 0 ? 1f : 0f, 0f);
+            gl.glColor3f(turn == 0 ? 0.4f : 0.4f, turn == 0 ? 0f : 0f, 0.6f);
             drawCircleWithShadow(gl, hoverX + widthUnit / 2, heightUnit / 2, widthUnit / 2 - 5);
         } else if (p1 != null && p2 != null) {
             drawWinningLine(gl);
@@ -85,7 +83,7 @@ class Connect4 {
     }
 
     private void drawCircleWithShadow(GL gl, int x, int y, int radius) {
-        gl.glColor3f(0f, 0f, 0f); 
+        gl.glColor3f(0f, 0f, 0f);
         gl.glBegin(GL.GL_TRIANGLE_FAN);
         gl.glVertex2f(x + 3, y - 3);
         for (int i = 0; i <= 360; i++) {
@@ -94,7 +92,7 @@ class Connect4 {
         }
         gl.glEnd();
 
-        gl.glColor3f(1f, 1f, 1f); 
+        gl.glColor3f(0.4f, 0f, 0.6f);
         gl.glBegin(GL.GL_TRIANGLE_FAN);
         gl.glVertex2f(x, y);
         for (int i = 0; i <= 360; i++) {
@@ -122,7 +120,6 @@ class Connect4 {
         if (x < widthUnit) x = widthUnit;
         if (x >= WIDTH - widthUnit) x = WIDTH - 2 * widthUnit;
         hoverX = x;
-        System.out.println("Hover: hoverX = " + hoverX);
     }
 
     public void drop() {
@@ -144,7 +141,6 @@ class Connect4 {
             }
             if (gameDone) return;
             board[column][row] = color;
-            System.out.println("Drop: column = " + column + ", row = " + row + ", color = " + color);
             checkConnect(column, row);
         }).start();
 
@@ -219,7 +215,6 @@ class Connect4 {
             public void run() {
                 if (!gameDone) {
                     gameDone = true;
-                    System.out.println("Player " + (turn + 1) % players.length + " wins by timeout!");
                 }
             }
         };
