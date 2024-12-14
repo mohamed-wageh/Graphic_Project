@@ -50,6 +50,21 @@ class Connect4 {
         roundsToWin = 1; // Default to one round
         startTimer();
     }
+    public void passTurn() {
+        // Logic to switch the turn to the next player
+        if (currentPlayer == Player.ONE) {
+            currentPlayer = Player.TWO;
+        } else {
+            currentPlayer = Player.ONE;
+        }
+        System.out.println("Turn passed to " + currentPlayer);
+    }
+
+    public enum Player {
+        ONE, TWO
+    }
+
+    private Player currentPlayer = Player.ONE;
 
     public void setMode(Mode mode) {
         currentMode = mode;

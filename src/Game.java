@@ -12,6 +12,10 @@ public class Game extends JFrame {
     private boolean paused = false; // Tracks whether the game is paused
     private JDialog pauseMenu; // The pause menu dialog
 
+    private Timer turnTimer;  // Timer for the current turn
+    private int timeRemaining; // Remaining time for the turn
+    private JLabel timerLabel; // Label to display the timer
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Game::new);
     }
@@ -121,6 +125,11 @@ public class Game extends JFrame {
         glCanvas.addMouseListener(listener);
         glCanvas.addMouseMotionListener(listener);
 
+        // Add a timer display label to the game UI
+        timerLabel = new JLabel("Time: 30", SwingConstants.CENTER);
+        timerLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        getContentPane().add(timerLabel, BorderLayout.NORTH);
+
         getContentPane().add(glCanvas, BorderLayout.CENTER);
 
         animator = new FPSAnimator(glCanvas, 60);
@@ -143,7 +152,52 @@ public class Game extends JFrame {
         setVisible(true);
         setFocusable(true);
         glCanvas.requestFocusInWindow();
+
+        // Start the timer for the first turn
+        startTurnTimer();
     }
+
+    private void startTurnTimer() {
+        // Set the duration for the turn
+        timeRemaining = 30; // 30 seconds per turn
+        updateTimerLabel();
+
+        // Create a timer that updates every second
+        turnTimer = new Timer(1000, e -> {
+            timeRemaining--;
+            updateTimerLabel();
+
+            if (timeRemaining <= 0) {
+                turnTimer.stop(); // Stop the timer when time is up
+                handleTurnTimeout(); // Handle the timeout
+            }
+        });
+
+        turnTimer.start();
+    }
+
+    private void updateTimerLabel() {
+        // Update the displayed time
+        timerLabel.setText("Time: " + timeRemaining + "s");
+    }
+
+    private void handleTurnTimeout() {
+        int option = JOptionPane.showOptionDialog(this,
+                "Time's up! Passing turn to the opponent.",
+                "Time Out",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                new String[] { "Restart Game", "Exit Game" },
+                "Restart Game");
+        if (option == JOptionPane.YES_OPTION) {
+            connect4Game.resetGame();
+            startTurnTimer();
+        } else if (option == JOptionPane.NO_OPTION) {
+            System.exit(0);
+        }
+    }
+
 
     private void togglePause() {
         if (paused) {
@@ -156,12 +210,18 @@ public class Game extends JFrame {
     private void pauseGame() {
         paused = true;
         animator.stop(); // Pause the game animation
+        if (turnTimer != null) {
+            turnTimer.stop(); // Pause the turn timer
+        }
         showPauseMenu();
     }
 
     private void resumeGame() {
         paused = false;
         animator.start(); // Resume the game animation
+        if (turnTimer != null) {
+            turnTimer.start(); // Resume the turn timer
+        }
         if (pauseMenu != null) {
             pauseMenu.dispose(); // Close the pause menu
         }
@@ -205,4 +265,5 @@ public class Game extends JFrame {
         connect4Game = new Connect4(); // Reset the Connect4 game object
         showMainMenu(); // Go back to the main menu
     }
+
 }
