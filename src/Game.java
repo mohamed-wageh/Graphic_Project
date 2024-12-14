@@ -47,7 +47,7 @@ public class Game extends JFrame {
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 26));
         titleLabel.setForeground(Color.WHITE);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(250, 10, 40, 10)); // مسافات حول النص
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(250, 10, 40, 10));
 
         // buttonPanel
         JPanel buttonPanel = new JPanel(new GridBagLayout());
@@ -99,7 +99,7 @@ public class Game extends JFrame {
         mainPanel.add(titleLabel, BorderLayout.NORTH);
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
 
-        // إعداد الإطار
+
         mainMenuFrame.add(mainPanel);
         mainMenuFrame.setVisible(true);
     }
@@ -141,7 +141,7 @@ public class Game extends JFrame {
 
         // Button panel with GridBagLayout
         JPanel buttonPanel = new JPanel(new GridBagLayout());
-        buttonPanel.setOpaque(false); // Make background transparent to match the gradient
+        buttonPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 20, 10, 20); // Padding between buttons
 
