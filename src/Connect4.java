@@ -5,6 +5,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 class Connect4 {
+
+
+    //edit screen from ahmed essam 
     private static final int WIDTH, HEIGHT, widthUnit, heightUnit, boardLength, boardHeight;
     private static Color[][] board;
     private static Color[] players;
@@ -38,11 +41,14 @@ class Connect4 {
     }
 
     public void draw(GL gl) {
+        gl.glClearColor(0.95f, 0.95f, 0.95f, 1.0f); 
+        gl.glClear(GL.GL_COLOR_BUFFER_BIT); 
+
         if (gameDone) {
             Color winningColor = players[(turn + 1) % players.length];
             gl.glColor3f(winningColor.getRed() / 255f, winningColor.getGreen() / 255f, winningColor.getBlue() / 255f);
         } else {
-            gl.glColor3f(1f, 1f, 1f);
+            gl.glColor3f(0.8f, 0.8f, 0.8f); 
         }
         gl.glBegin(GL.GL_LINE_LOOP);
         gl.glVertex2f(widthUnit, heightUnit);
@@ -59,26 +65,36 @@ class Connect4 {
                 if (boardX >= 0 && boardX < boardLength && boardY >= 0 && boardY < boardHeight) {
                     Color color = board[boardX][boardY];
                     if (color == Color.YELLOW) {
-                        gl.glColor3f(1f, 1f, 0f);
+                        gl.glColor3f(1f, 1f, 0f); 
                     } else if (color == Color.RED) {
-                        gl.glColor3f(1f, 0f, 0f);
+                        gl.glColor3f(1f, 0f, 0f); 
                     } else {
-                        gl.glColor3f(1f, 1f, 1f);
+                        gl.glColor3f(1f, 1f, 1f); 
                     }
-                    drawCircle(gl, i + widthUnit / 2, j + heightUnit / 2, widthUnit / 2 - 5);
+                    drawCircleWithShadow(gl, i + widthUnit / 2, j + heightUnit / 2, widthUnit / 2 - 5);
                 }
             }
         }
 
         if (!gameDone) {
             gl.glColor3f(turn == 0 ? 1f : 1f, turn == 0 ? 1f : 0f, 0f);
-            drawCircle(gl, hoverX + widthUnit / 2, heightUnit / 2, widthUnit / 2 - 5);
+            drawCircleWithShadow(gl, hoverX + widthUnit / 2, heightUnit / 2, widthUnit / 2 - 5);
         } else if (p1 != null && p2 != null) {
             drawWinningLine(gl);
         }
     }
 
-    private void drawCircle(GL gl, int x, int y, int radius) {
+    private void drawCircleWithShadow(GL gl, int x, int y, int radius) {
+        gl.glColor3f(0f, 0f, 0f); 
+        gl.glBegin(GL.GL_TRIANGLE_FAN);
+        gl.glVertex2f(x + 3, y - 3);
+        for (int i = 0; i <= 360; i++) {
+            double angle = Math.toRadians(i);
+            gl.glVertex2f((float) (x + Math.cos(angle) * (radius + 2)), (float) (y + Math.sin(angle) * (radius + 2)));
+        }
+        gl.glEnd();
+
+        gl.glColor3f(1f, 1f, 1f); 
         gl.glBegin(GL.GL_TRIANGLE_FAN);
         gl.glVertex2f(x, y);
         for (int i = 0; i <= 360; i++) {
