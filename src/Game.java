@@ -88,12 +88,7 @@ public class Game extends JFrame {
         gbc.gridy = 2;
         buttonPanel.add(instructionsButton, gbc);
 
-        instructionsButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(mainMenuFrame,
-                    "Instructions:\n1. Players take turns dropping discs.\n2. The goal is to connect 4 discs in a row.\n3. You can connect horizontally, vertically, or diagonally.\n4. First player to connect 4 wins!",
-                    "Game Instructions",
-                    JOptionPane.INFORMATION_MESSAGE);
-        });
+        instructionsButton.addActionListener(e -> showDetailedInstructions() );
 
 
         mainPanel.add(titleLabel, BorderLayout.NORTH);
@@ -404,4 +399,89 @@ public class Game extends JFrame {
         connect4Game = new Connect4(); // Reset the Connect4 game object
         showMainMenu(); // Go back to the main menu
     }
+    private void showDetailedInstructions() {
+        JFrame instructionsFrame = new JFrame("Game Instructions");
+        instructionsFrame.setSize(800, 700);
+        instructionsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        instructionsFrame.setLocationRelativeTo(null);
+
+        // Main panel with gradient background
+        JPanel mainPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                Color color1 = new Color(20, 30, 60); // dark blue
+                Color color2 = new Color(10, 20, 40);//light blue
+                GradientPaint gradient = new GradientPaint(0, 0, color1, 0, getHeight(), color2);
+                g2d.setPaint(gradient);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+        mainPanel.setLayout(new BorderLayout());
+
+        // Title label
+        JLabel titleLabel = new JLabel("How to Play Connect 4");
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+
+        // Instructions panel
+        JPanel instructionsPanel = new JPanel();
+        instructionsPanel.setLayout(new BoxLayout(instructionsPanel, BoxLayout.Y_AXIS));
+        instructionsPanel.setOpaque(false);
+        // Define the font styles
+        Font regularFont = new Font("Tahoma", Font.PLAIN, 16);
+        Font boldFont = new Font("Arial", Font.BOLD, 18);
+
+        addStyledInstruction(instructionsPanel, "• Welcome to Connect 4! ", boldFont, Color.WHITE, true);
+        addStyledInstruction(instructionsPanel, "   -Each player takes turns dropping colorful discs into one of 7 columns.", regularFont, Color.WHITE, false);
+        addStyledInstruction(instructionsPanel, "   -The discs stack up at the lowest available slot in that column.", regularFont, Color.WHITE, false);
+        addStyledInstruction(instructionsPanel, "   -Your mission: connect FOUR discs in a row horizontally, vertically, or diagonally to win!", regularFont, Color.WHITE, false);
+        addStyledInstruction(instructionsPanel, "• Hurry! You have only 30 seconds per turn to make your move.", boldFont, Color.WHITE, true);
+
+        addStyledInstruction(instructionsPanel, "• Modes:", boldFont, Color.WHITE, true);
+        addStyledInstruction(instructionsPanel, "   - Player vs Player: Play one round, Best of 3, or Best of 5!", regularFont, Color.WHITE, false);
+        addStyledInstruction(instructionsPanel, "   - Player vs AI: Challenge the computer on Easy, Medium, or Hard.", regularFont, Color.WHITE, false);
+
+        addStyledInstruction(instructionsPanel, "- Get creative! Winning requires careful planning and a touch of trickery.", regularFont, Color.WHITE, false);
+
+        // Button panel
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false);
+        JButton backButton = new JButton("Back to Main Menu");
+        styleButton(backButton, new Color(220, 20, 60)); // Red color for the button
+        backButton.addActionListener(e -> instructionsFrame.dispose());
+        buttonPanel.add(backButton);
+
+        mainPanel.add(titleLabel, BorderLayout.NORTH);
+        mainPanel.add(instructionsPanel, BorderLayout.CENTER);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        instructionsFrame.add(mainPanel);
+        instructionsFrame.setVisible(true);
+    }
+
+    // Method to add styled instructions to the panel
+    public static void addStyledInstruction(JPanel panel, String instructionText, Font font, Color color, boolean isBold) {
+        JLabel label = new JLabel(instructionText);
+
+        // Apply bolding to text if required
+        if (isBold) {
+            label.setFont(new Font(font.getName(), Font.BOLD, font.getSize()));
+            label.setForeground(color);
+        } else {
+            label.setFont(font);
+            label.setForeground(color);
+        }
+
+        // Align left and add padding
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panel.add(label);
+    }
+
+
+
 }
