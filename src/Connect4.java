@@ -80,6 +80,7 @@ class Connect4 {
         startTimer();
     }
 
+
     public void draw(GL gl) {
         // Draw the frame for the board
         if (gameDone) {
@@ -122,6 +123,31 @@ class Connect4 {
         }
 
         drawTimer(gl); // Draw the timer
+
+        drawPauseButton(gl); // Draw the pause button on the top right
+    }
+    // Check iconSize and position to make sure they are not off-screen
+    private void drawPauseButton(GL gl) {
+        int iconSize = 30; // Size of the pause icon
+        int x =730; // X position (top-right corner)
+        int y = 30; // Y position (top-right corner)
+
+        gl.glColor3f(1f, 1f, 1f); // White color for the icon
+        gl.glBegin(GL.GL_QUADS); // Drawing the quadrilateral for the pause button
+
+        // Draw the left rectangle part of the pause button
+        gl.glVertex2f(x, y); // Bottom-left
+        gl.glVertex2f(x + iconSize / 4, y); // Bottom-right
+        gl.glVertex2f(x + iconSize / 4, y + iconSize); // Top-right
+        gl.glVertex2f(x, y + iconSize); // Top-left
+
+        // Draw the right rectangle part of the pause button
+        gl.glVertex2f(x + iconSize / 2, y); // Bottom-left
+        gl.glVertex2f(x + 3 * iconSize / 4, y); // Bottom-right
+        gl.glVertex2f(x + 3 * iconSize / 4, y + iconSize); // Top-right
+        gl.glVertex2f(x + iconSize / 2, y + iconSize); // Top-left
+
+        gl.glEnd(); // Finish drawing the pause button
     }
 
     private void drawCircle(GL gl, int x, int y, int radius) {
@@ -163,6 +189,28 @@ class Connect4 {
         if (x >= WIDTH - widthUnit) x = WIDTH - 2 * widthUnit;
         hoverX = x;
         System.out.println("Hover: hoverX = " + hoverX); // Debugging statement
+    }
+    private boolean isPauseClicked(int mouseX, int mouseY) {
+        int iconSize = 40;
+        int x = WIDTH - iconSize - 10;
+        int y = HEIGHT - iconSize - 10;
+
+        return mouseX >= x && mouseX <= x + iconSize && mouseY >= y && mouseY <= y + iconSize;
+    }
+    private boolean isPaused = false;
+
+    public void togglePause(int mouseX, int mouseY) {
+        if (isPauseClicked(mouseX, mouseY)) {
+            isPaused = !isPaused;
+            if (isPaused) {
+                System.out.println("Game Paused!");
+                // You may also stop the timer here
+                timer.cancel();
+            } else {
+                System.out.println("Game Resumed!");
+                startTimer(); // Restart the timer
+            }
+        }
     }
 
     public void drop() {

@@ -436,9 +436,9 @@ public class Game extends JFrame {
         Font boldFont = new Font("Arial", Font.BOLD, 18);
 
         addStyledInstruction(instructionsPanel, "• Welcome to Connect 4! ", boldFont, Color.WHITE, true);
-        addStyledInstruction(instructionsPanel, "   -Each player takes turns dropping colorful discs into one of 7 columns.", regularFont, Color.WHITE, false);
-        addStyledInstruction(instructionsPanel, "   -The discs stack up at the lowest available slot in that column.", regularFont, Color.WHITE, false);
-        addStyledInstruction(instructionsPanel, "   -Your mission: connect FOUR discs in a row horizontally, vertically, or diagonally to win!", regularFont, Color.WHITE, false);
+        addStyledInstruction(instructionsPanel, "   - Each player takes turns dropping colorful discs into one of 7 columns.", regularFont, Color.WHITE, false);
+        addStyledInstruction(instructionsPanel, "   - The discs stack up at the lowest available slot in that column.", regularFont, Color.WHITE, false);
+        addStyledInstruction(instructionsPanel, "   - Your mission: connect FOUR discs in a row horizontally, vertically, or diagonally to win!", regularFont, Color.WHITE, false);
         addStyledInstruction(instructionsPanel, "• Hurry! You have only 30 seconds per turn to make your move.", boldFont, Color.WHITE, true);
 
         addStyledInstruction(instructionsPanel, "• Modes:", boldFont, Color.WHITE, true);
