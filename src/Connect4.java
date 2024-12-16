@@ -278,7 +278,7 @@ class Connect4 {
     private void drawTurnMessage(GL gl) {
         String message;
         if (currentMode == Mode.PLAYER_VS_PLAYER) {
-            message = "Player " + (turn + 1) + "'s turn"; // Display Player 1 or Player 2's turn
+            message = "Player " + (turn + 1) + "'s turnn"; // Display Player 1 or Player 2's turn
         } else if (currentMode == Mode.PLAYER_VS_COMPUTER) {
             if (turn == 0) {
                 message = "Your turn"; // If it's the player's turn
