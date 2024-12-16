@@ -13,6 +13,7 @@ public class Game extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Game::new);
+
     }
 
     public Game() {

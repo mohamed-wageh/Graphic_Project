@@ -53,8 +53,10 @@ class Connect4 {
         player1Wins = 0;
         player2Wins = 0;
         roundsToWin = 1; // Default to one round
+
         startTimer();
     }
+    private static boolean timerStarted = false; // Timer starts only after gameplay begins
 
     public void setMode(Mode mode) {
         currentMode = mode;
@@ -373,27 +375,6 @@ class Connect4 {
         return null;
     }
 
-//    private static void startTimer() {
-//        timerTask = new TimerTask() {
-//            @Override
-//            public void run() {
-//                if (!gameDone) {
-//                    remainingTime--;
-//                    if (remainingTime <= 0) {
-//                        gameDone = true;
-//                        System.out.println("Player " + (turn + 1) % players.length + " wins by timeout!");
-//                    }
-//                }
-//            }
-//        };
-//        timer.scheduleAtFixedRate(timerTask, 1000, 1000); // Schedule the task to run every second
-//    }
-
-//    private static void resetTimer() {
-//        timerTask.cancel(); // Cancel the current task
-//        remainingTime = 30; // Reset the remaining time to 30 seconds
-//        startTimer(); // Start a new timer task
-//    }
 
     private static void computerMove() {
         switch (currentDifficulty) {
@@ -571,64 +552,34 @@ class Connect4 {
             p2 = new Point(x2, y2);
         }
     }
+
+    private static void switchTurn() {
+        turn = (turn + 1) % 2; // Alternate between Player 1 and Player 2
+        resetTimer(); // Reset the timer for the next player
+
+        System.out.println("Turn switched to Player " + (turn + 1));
+    }
+
     private static void startTimer() {
         timerTask = new TimerTask() {
             @Override
             public void run() {
                 if (!gameDone && remainingTime > 0) {
-                    remainingTime--; // Decrease the counter by 1 each second
-                    System.out.println("Remaining time: " + remainingTime + " seconds"); // Debugging: Log the time left
-                    if (remainingTime <= 0) {
-                        // Timer runs out: handle timeout logic
-                        gameDone = true;
-                        System.out.println("Player " + (turn + 1) + " loses by timeout!");
-
-                        // Award win to the other player
-                        if (turn == 0) {
-                            player2Wins++;
-                        } else {
-                            player1Wins++;
-                        }
-
-                        // Check if someone has won the series
-                        if (player1Wins >= roundsToWin || player2Wins >= roundsToWin) {
-                            System.out.println("Player " + (player1Wins >= roundsToWin ? "1" : "2") + " wins the series!");
-                            resetGame(); // Reset the game for a new series
-                        } else {
-                            resetGame(); // Reset for the next round
-                        }
-                    }
+                    remainingTime--;
+                    System.out.println("Player " + (turn + 1) + "'s remaining time: " + remainingTime + " seconds");
+                } else if (!gameDone && remainingTime <= 0) {
+                    System.out.println("Player " + (turn + 1) + " ran out of time! Switching to the next player...");
+                    switchTurn(); // Switch turn when time runs out
                 }
             }
         };
-        timer.scheduleAtFixedRate(timerTask, 1000, 1000); // Runs every second
+        timer.scheduleAtFixedRate(timerTask, 1000, 1000); // Schedule the timer to run every second
     }
 
     private static void resetTimer() {
-        if (timerTask != null) {
-            timerTask.cancel(); // Stop the current timer task
-        }
-        remainingTime = 30; // Reset the counter to 30 seconds
-        startTimer(); // Start the timer for the new turn
+        remainingTime = 30; // Reset timer to 30 seconds
+        System.out.println("Timer reset for Player " + (turn + 1));
     }
-
-
-    private static void timerExpired() {
-        System.out.println("Player " + (turn + 1) + " ran out of time!");
-        // Switch turn to the other player
-        turn = (turn + 1) % players.length;
-        resetTimer(); // Reset the timer for the next player
-
-        // Handle computer's move if in Player vs Computer mode
-        if (currentMode == Mode.PLAYER_VS_COMPUTER && turn == 1) {
-            computerMove();
-        }
-
-        // Check if the new turn results in a win (optional)
-        if (isTerminalNode(board)) {
-            gameDone = true;
-            System.out.println("Player " + (turn + 1) + " wins due to timer expiration!");
-        }
 }
 
-}
+
