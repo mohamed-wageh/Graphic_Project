@@ -44,7 +44,7 @@ public class Instructions {
 
         addStyledInstruction(instructionsContentPanel, "• Welcome to Connect 4!", boldFont, Color.WHITE, true);
         addStyledInstruction(instructionsContentPanel, "   - Each player takes turns dropping colorful discs into one of 7 columns.", regularFont, Color.WHITE, false);
-        addStyledInstruction(instructionsContentPanel, "   - The discs stack up at the lowest available slot in that column.", regularFont, Color.WHITE, false);
+        addStyledInstruction(instructionsContentPanel, "   - The discs stack up at the lowest available slot in that columnn.", regularFont, Color.WHITE, false);
         addStyledInstruction(instructionsContentPanel, "   - Use the mouse to select a column to drop a disc", regularFont, Color.WHITE, false);
         addStyledInstruction(instructionsContentPanel, "   - Press ESC to pause the game.", regularFont, Color.WHITE, false);
 
