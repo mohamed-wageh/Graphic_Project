@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class Instructions {
     private JFrame instructionsFrame;
@@ -15,7 +14,7 @@ public class Instructions {
     private void createInstructionsFrame() {
         instructionsFrame = new JFrame("Game Instructions");
         instructionsFrame.setSize(800, 800);
-        instructionsFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        instructionsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         instructionsFrame.setLocationRelativeTo(null);
 
         // Main Instructions panel with Gradient Background
@@ -32,57 +31,75 @@ public class Instructions {
             }
         };
         instructionsPanel.setLayout(new BorderLayout());
+        instructionsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Instructions Text Area
-        JTextArea instructionsText = new JTextArea("Instructions for Connect4 game...\n" +
-                "\n" +
-                "1. Each player takes turns to drop a piece into one of the columns.\n" +
-                "2. The goal is to align 4 pieces horizontally, vertically, or diagonally.\n" +
-                "3. Player 1 is Red, Player 2 is Yellow.\n" +
-                "4. Use the mouse to select a column to drop a piece.\n" +
-                "5. Press ESC to pause the game.");
-        instructionsText.setEditable(false);
-        instructionsText.setFont(new Font("Arial", Font.PLAIN, 16));
-        instructionsText.setBackground(new Color(245, 245, 245));
-        instructionsText.setLineWrap(true);
-        instructionsText.setWrapStyleWord(true);
-        instructionsText.setCaretPosition(0); // Ensure that the text starts from the top
+        // Define font styles
+        Font regularFont = new Font("Tahoma", Font.PLAIN, 16);
+        Font boldFont = new Font("Arial", Font.BOLD, 18);
 
-        // Center the instructions text using JScrollPane and BorderLayout
-        JPanel instructionsTextPanel = new JPanel(new BorderLayout());
-        instructionsTextPanel.add(new JScrollPane(instructionsText), BorderLayout.CENTER);
+        // Instructions content panel
+        JPanel instructionsContentPanel = new JPanel();
+        instructionsContentPanel.setLayout(new BoxLayout(instructionsContentPanel, BoxLayout.Y_AXIS));
+        instructionsContentPanel.setOpaque(false); // Transparent background
 
-        // Adding content panel to the main panel
-        instructionsPanel.add(instructionsTextPanel, BorderLayout.CENTER);
+        addStyledInstruction(instructionsContentPanel, "• Welcome to Connect 4!", boldFont, Color.WHITE, true);
+        addStyledInstruction(instructionsContentPanel, "   - Each player takes turns dropping colorful discs into one of 7 columns.", regularFont, Color.WHITE, false);
+        addStyledInstruction(instructionsContentPanel, "   - The discs stack up at the lowest available slot in that column.", regularFont, Color.WHITE, false);
+        addStyledInstruction(instructionsContentPanel, "   - Use the mouse to select a column to drop a disc", regularFont, Color.WHITE, false);
+        addStyledInstruction(instructionsContentPanel, "   - Press ESC to pause the game.", regularFont, Color.WHITE, false);
 
-        // Back Button styled similarly to the main menu buttons
+        addStyledInstruction(instructionsContentPanel, "   - Your mission: connect FOUR discs in a row horizontally, vertically, or diagonally to win!", regularFont, Color.WHITE, false);
+        addStyledInstruction(instructionsContentPanel, "   - Hurry! You have only 30 seconds per turn to make your move.", boldFont, Color.WHITE, true);
+        addStyledInstruction(instructionsContentPanel, "• Modes:", boldFont, Color.WHITE, true);
+        addStyledInstruction(instructionsContentPanel, "   - Player vs Player: Play one round, Best of 3, or Best of 5!", regularFont, Color.WHITE, false);
+        addStyledInstruction(instructionsContentPanel, "   - Player vs AI: Challenge the computer on Easy, Medium, or Hard.", regularFont, Color.WHITE, false);
+        addStyledInstruction(instructionsContentPanel, "- Get creative! Winning requires careful planning and a touch of trickery.", regularFont, Color.WHITE, false);
+
+        // Add the instructions panel to a scrollable view
+        JScrollPane instructionsScrollPane = new JScrollPane(instructionsContentPanel);
+        instructionsScrollPane.setBorder(null);
+        instructionsScrollPane.setOpaque(false);
+        instructionsScrollPane.getViewport().setOpaque(false);
+
+        instructionsPanel.add(instructionsScrollPane, BorderLayout.CENTER);
+
+        // Back Button
         JButton backButton = new JButton("Back");
-        styleButton(backButton, new Color(255, 69, 0)); // Using the same red color as "Back" buttons in previous classes
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                instructionsFrame.dispose();
-                // Optionally, you can call a method to return to the MainMenu or any other window
-                // new MainMenu(new Connect4(), game); // Uncomment if necessary
-            }
-        });
+        styleButton(backButton, new Color(255, 69, 0)); // Red color for "Back"
+        backButton.addActionListener((ActionEvent e) -> instructionsFrame.dispose());
 
-        // Content panel for instructions
-        JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new BorderLayout());
-        contentPanel.add(instructionsPanel, BorderLayout.CENTER);
-
-        // Adding the back button in the center at the bottom
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));  // Centering the button
+        // Bottom panel for the button
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setOpaque(false);
         buttonPanel.add(backButton);
-        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        instructionsFrame.add(contentPanel);
+        // Combine panels into the main content
+        instructionsPanel.add(buttonPanel, BorderLayout.SOUTH);
+        instructionsFrame.add(instructionsPanel);
+
+        // Display the frame
         instructionsFrame.setVisible(true);
     }
 
-    // This method styles buttons similarly to the ones in the other screens (MainMenu, DifficultySelection)
+    // Method to add styled instructions to the panel
+    public static void addStyledInstruction(JPanel panel, String instructionText, Font font, Color color, boolean isBold) {
+        JLabel label = new JLabel(instructionText);
+
+        // Apply bolding to text if required
+        if (isBold) {
+            label.setFont(new Font(font.getName(), Font.BOLD, font.getSize()));
+        } else {
+            label.setFont(font);
+        }
+        label.setForeground(color);
+
+        // Align left and add padding
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panel.add(label);
+    }
+
+    // Method to style buttons uniformly
     private void styleButton(JButton button, Color backgroundColor) {
         button.setBackground(backgroundColor);
         button.setForeground(Color.WHITE);
@@ -91,9 +108,9 @@ public class Instructions {
         button.setPreferredSize(new Dimension(200, 50));
         button.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
 
-        // Set rounded corners using EmptyBorder
+        // Padding for rounded corners look
         button.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Color.WHITE, 1),
-                BorderFactory.createEmptyBorder(10, 20, 10, 20))); // Add padding for rounded look
+                BorderFactory.createEmptyBorder(10, 20, 10, 20)));
     }
 }
