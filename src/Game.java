@@ -21,6 +21,9 @@ public class Game extends JFrame {
     }
 
     private void showMainMenu() {
+        if (pauseMenu != null) {
+            pauseMenu.dispose();
+        }
         new MainMenu(connect4Game, this);
     }
 
@@ -74,19 +77,34 @@ public class Game extends JFrame {
         if (pauseMenu != null) {
             pauseMenu.dispose();
         }
+        this.setVisible(true);
     }
 
     private void showPauseMenu() {
         if (pauseMenu == null) {
             pauseMenu = new JDialog(this, "Paused", true);
-            pauseMenu.setSize(300, 200);
-            pauseMenu.setLayout(new BorderLayout());
+            pauseMenu.setSize(300, 250);
             pauseMenu.setLocationRelativeTo(this);
 
+            // Resume Button
             JButton resumeButton = new JButton("Resume");
             resumeButton.addActionListener(e -> resumeGame());
-            pauseMenu.add(resumeButton, BorderLayout.CENTER);
+            pauseMenu.add(resumeButton, BorderLayout.NORTH);
+
+            // Main Menu Button
+            JButton mainMenuButton = new JButton("Main Menu");
+            mainMenuButton.addActionListener(e -> showMainMenu());
+            pauseMenu.add(mainMenuButton, BorderLayout.CENTER);
+
+            // Quit Game Button
+            JButton quitButton = new JButton("Quit Game");
+            quitButton.addActionListener(e -> quitGame());
+            pauseMenu.add(quitButton, BorderLayout.SOUTH);
         }
         pauseMenu.setVisible(true);
+    }
+
+    private void quitGame() {
+        System.exit(0); // Exit the application
     }
 }

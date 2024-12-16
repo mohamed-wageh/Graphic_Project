@@ -273,7 +273,7 @@ class Connect4 {
     private void drawTurnMessage(GL gl) {
         String message;
         if (currentMode == Mode.PLAYER_VS_PLAYER) {
-            message = "Player " + (turn + 1) + "'s turn"; // Display Player 1 or Player 2's turn
+            message = "Player " + (turn + 1) + "'s turn";
         } else if (currentMode == Mode.PLAYER_VS_COMPUTER) {
             if (turn == 0) {
                 message = "Your turn"; // If it's the player's turn
@@ -281,14 +281,14 @@ class Connect4 {
                 message = "Computer's turn"; // If it's the computer's turn
             }
         } else {
-            message = "Unknown mode"; // In case there's an issue
+            message = "Unknown mode";
         }
         GLUT glut = new GLUT();
-        // Display the message at the top of the screen
-        gl.glColor3f(1f, 1f, 1f); // White color for text
-        gl.glRasterPos2f((float) WIDTH / 2 - 50, HEIGHT - 30); // Position the message at the top center
-        glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, message); // Render the text (you can use any OpenGL font rendering method here)
+        gl.glColor3f(1f, 1f, 1f); // Set color to white
+        gl.glRasterPos2f(WIDTH / 2 - 50, HEIGHT - 30); // Position the message at the top center
+        glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, message); // Render the text
     }
+
 
     private void checkConnect(int x, int y) {
         if (gameDone) return;
