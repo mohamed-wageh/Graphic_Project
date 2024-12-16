@@ -5,8 +5,8 @@ import java.awt.event.ActionListener;
 
 public class Instructions {
     private final Connect4 connect4Game;
-    private JFrame instructionsFrame;
     private Game game;
+    private JFrame instructionsFrame;
 
     public Instructions(Connect4 connect4Game, Game game) {
         this.game = game;

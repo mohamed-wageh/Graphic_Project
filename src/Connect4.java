@@ -1,12 +1,13 @@
 import com.sun.opengl.util.GLUT;
 
 import javax.media.opengl.GL;
+import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
-class Connect4 {
+class Connect4 extends Component {
     private static final int WIDTH, HEIGHT, widthUnit, heightUnit, boardLength, boardHeight;
     private static Color[][] board;
     private static Color[] players;
@@ -20,7 +21,7 @@ class Connect4 {
     private static int remainingTime; // Remaining time in seconds
     private static int player1Wins, player2Wins; // Track wins for best of 3 and best of 5
     private static int roundsToWin; // Number of rounds needed to win
-
+    JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
     enum Mode { PLAYER_VS_PLAYER, PLAYER_VS_COMPUTER }
     enum Difficulty { EASY, MEDIUM, HARD }
     private static Mode currentMode;
@@ -66,7 +67,7 @@ class Connect4 {
         roundsToWin = rounds;
     }
 
-    public void resetGame() {
+    public static void resetGame() {
         for (Color[] colors : board) {
             Arrays.fill(colors, Color.WHITE);
         }
@@ -82,6 +83,108 @@ class Connect4 {
         timer = new Timer();
         startTimer();
     }
+
+    private void checkConnect(int x, int y) {
+        if (gameDone) return;
+
+        PointPair pair = search(board, x, y);
+
+        if (pair != null) {
+            p1 = new Point((pair.p1.x + 1) * widthUnit + widthUnit / 2, (pair.p1.y + 1) * heightUnit + heightUnit / 2);
+            p2 = new Point((pair.p2.x + 1) * widthUnit + widthUnit / 2, (pair.p2.y + 1) * heightUnit + heightUnit / 2);
+            gameDone = true;
+            timer.cancel();
+
+            // Update the win count
+            if (turn == 0) {
+                player1Wins++;
+            } else {
+                player2Wins++;
+            }
+
+            // Check if someone has won the series
+            if (player1Wins >= roundsToWin || player2Wins >= roundsToWin) {
+                String winnerMessage = "Player " + (player1Wins >= roundsToWin ? "2" : "1") + " wins the series!";
+                System.out.println(winnerMessage);
+
+                // Show pop-up with custom buttons
+                int option = JOptionPane.showOptionDialog(
+                        null, // Parent component (null means it will be centered on the screen)
+                        winnerMessage, // Message to display
+                        "Game Over", // Title of the dialog
+                        JOptionPane.DEFAULT_OPTION, // Option type (DEFAULT_OPTION means no predefined options)
+                        JOptionPane.INFORMATION_MESSAGE, // Message type
+                        null, // Icon (null means use default)
+                        new Object[] { "Restart Game", "Main Menu" }, // Custom buttons
+                        "Restart Game" // Default button (the one selected by default)
+                );
+
+                // Handle button clicks
+                if (option == 0) { // Restart Game
+                    resetGame();
+                } else if (option == 1) { // Main Menu
+                    goToMainMenu(null);
+                }
+
+                // Reset the win counts for the series after showing the winner
+                player1Wins = 0;
+                player2Wins = 0;
+            } else {
+                // Reset the game for the next round
+                resetGame();
+            }
+        }
+    }
+
+    private static void startTimer() {
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                if (!gameDone) {
+                    remainingTime--;
+                    if (remainingTime <= 0) {
+                        gameDone = true;
+                        String timeoutMessage = "Player " + (turn == 0 ? 2 : 1) + " wins by timeout!";
+
+                        System.out.println(timeoutMessage);
+
+                        // Show pop-up with custom buttons
+                        int option = JOptionPane.showOptionDialog(
+                                null,
+                                timeoutMessage,
+                                "Game Over",
+                                JOptionPane.DEFAULT_OPTION,
+                                JOptionPane.INFORMATION_MESSAGE,
+                                null,
+                                new Object[] { "Restart Game", "Main Menu" },
+                                "Restart Game"
+                        );
+
+                        // Handle button clicks
+                        if (option == 0) { // Restart Game
+                            resetGame();
+                        } else if (option == 1) { // Main Menu
+//                            goToMainMenu(null);
+                        }
+                    }
+                }
+            }
+        };
+        timer.scheduleAtFixedRate(timerTask, 1000, 1000);
+    }
+
+
+
+    private void goToMainMenu(Connect4 connect4Game) {
+        // Close the current game window
+        if (currentFrame != null) {
+            currentFrame.dispose(); // Close the current window
+        }
+
+        // Create a new instance of the MainMenu and show it
+        new MainMenu(connect4Game, null); // Launch MainMenu (null for the game, as it's a new session)
+    }
+
 
     public void draw(GL gl) {
         // Draw the frame for the board
@@ -131,7 +234,6 @@ class Connect4 {
         drawTimer(gl); // Draw the timer
         drawPauseButton(gl); // Draw the pause button on the top right
 
-        // Draw the current game mode and turn information at the top
     }
 
 
@@ -157,7 +259,7 @@ class Connect4 {
         gl.glVertex2f(x + 3 * iconSize / 4, y + iconSize); // Top-right
         gl.glVertex2f(x + iconSize / 2, y + iconSize); // Top-left
 
-        gl.glEnd(); // Finish drawing the pause button
+        gl.glEnd();
     }
 
     private void drawCircle(GL gl, int x, int y, int radius) {
@@ -171,7 +273,7 @@ class Connect4 {
     }
 
     private void drawWinningLine(GL gl) {
-        gl.glColor3f(0f, 1f, 0f); // Set color to green for the winning line
+        gl.glColor3f(0f, 1f, 0f);
         gl.glLineWidth(5f);
         gl.glBegin(GL.GL_LINES);
         gl.glVertex2f(p1.x, p1.y);
@@ -179,16 +281,16 @@ class Connect4 {
         gl.glEnd();
 
         if (animationProgress < 1f) {
-            animationProgress += 0.01f; // Increment the animation progress
+            animationProgress += 0.01f;
         }
     }
 
     private void drawTimer(GL gl) {
         String timeText = "Time: " + remainingTime + "s";
         GLUT glut = new GLUT();
-        gl.glColor3f(1f, 1f, 1f); // Set the color to white
-        gl.glRasterPos2f(WIDTH / 2 - 50, HEIGHT - 40); // Position the text
-        glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, timeText); // Render the text
+        gl.glColor3f(1f, 1f, 1f);
+        gl.glRasterPos2f(WIDTH / 2 - 50, HEIGHT - 40);
+        glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, timeText);
     }
 
 
@@ -197,7 +299,7 @@ class Connect4 {
         if (x < widthUnit) x = widthUnit;
         if (x >= WIDTH - widthUnit) x = WIDTH - 2 * widthUnit;
         hoverX = x;
-        System.out.println("Hover: hoverX = " + hoverX); // Debugging statement
+        System.out.println("Hover: hoverX = " + hoverX);
     }
     private boolean isPauseClicked(int mouseX, int mouseY) {
         int iconSize = 40;
@@ -213,11 +315,10 @@ class Connect4 {
             isPaused = !isPaused;
             if (isPaused) {
                 System.out.println("Game Paused!");
-                // You may also stop the timer here
                 timer.cancel();
             } else {
                 System.out.println("Game Resumed!");
-                startTimer(); // Restart the timer
+                startTimer();
             }
         }
     }
@@ -225,7 +326,7 @@ class Connect4 {
     public void drop() {
         int column = hoverX / widthUnit - 1;
         if (currentMode == Mode.PLAYER_VS_COMPUTER && turn == 1) {
-            return; // Do nothing if it's the computer's turn
+            return;
         }
         if (board[column][0] != Color.WHITE) return;
 
@@ -236,7 +337,7 @@ class Connect4 {
                 row = i;
                 board[column][i] = color;
                 try {
-                    Thread.sleep(200); // Animate the piece falling
+                    Thread.sleep(200);
                 } catch (Exception ignored) {
                 }
                 board[column][i] = Color.WHITE;
@@ -249,7 +350,7 @@ class Connect4 {
         }).start();
 
         try {
-            Thread.sleep(100); // Short delay before checking if the game is done
+            Thread.sleep(100);
         } catch (Exception ignored) {
         }
 
@@ -284,48 +385,18 @@ class Connect4 {
             message = "Unknown mode";
         }
         GLUT glut = new GLUT();
-        gl.glColor3f(1f, 1f, 1f); // Set color to white
-        gl.glRasterPos2f(WIDTH / 2 - 50, HEIGHT - 30); // Position the message at the top center
-        glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, message); // Render the text
+        gl.glColor3f(1f, 1f, 1f);
+        gl.glRasterPos2f(10, 30);
+        glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, message);
     }
 
 
-    private void checkConnect(int x, int y) {
-        if (gameDone) return;
 
-        PointPair pair = search(board, x, y);
-
-        if (pair != null) {
-            p1 = new Point((pair.p1.x + 1) * widthUnit + widthUnit / 2, (pair.p1.y + 1) * heightUnit + heightUnit / 2);
-            p2 = new Point((pair.p2.x + 1) * widthUnit + widthUnit / 2, (pair.p2.y + 1) * heightUnit + heightUnit / 2);
-            gameDone = true;
-            timer.cancel(); // Stop the timer when the game is done
-
-            // Update win counts for best of 3 and best of 5
-            if (turn == 0) {
-                player1Wins++;
-            } else {
-                player2Wins++;
-            }
-
-            // Check if a player has won the series
-            if (player1Wins >= roundsToWin || player2Wins >= roundsToWin) {
-                System.out.println("Player " + (player1Wins >= roundsToWin ? "1" : "2") + " wins the series!");
-                // Reset win counts for a new series
-                player1Wins = 0;
-                player2Wins = 0;
-            } else {
-                // Reset the board for the next round
-                resetGame();
-            }
-        }
-    }
 
     private PointPair search(Color[][] arr, int i, int j) {
         Color color = arr[i][j];
         int left, right, up, down;
 
-        // check horizontally left to right
         left = right = i;
         while (left >= 0 && arr[left][j] == color) left--;
         left++;
@@ -335,7 +406,6 @@ class Connect4 {
             return new PointPair(left, j, right, j);
         }
 
-        // check vertically top to bottom
         down = j;
         while (down < arr[i].length && arr[i][down] == color) down++;
         down--;
@@ -343,7 +413,6 @@ class Connect4 {
             return new PointPair(i, j, i, down);
         }
 
-        // check diagonal top left to bottom right
         left = right = i;
         up = down = j;
         while (left >= 0 && up >= 0 && arr[left][up] == color) { left--; up--; }
@@ -354,7 +423,6 @@ class Connect4 {
             return new PointPair(left, up, right, down);
         }
 
-        // check diagonal top right to bottom left
         left = right = i;
         up = down = j;
         while (left >= 0 && down < arr[left].length && arr[left][down] == color) {left--; down++;}
@@ -368,26 +436,12 @@ class Connect4 {
         return null;
     }
 
-    private static void startTimer() {
-        timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                if (!gameDone) {
-                    remainingTime--;
-                    if (remainingTime <= 0) {
-                        gameDone = true;
-                        System.out.println("Player " + (turn + 1) % players.length + " wins by timeout!");
-                    }
-                }
-            }
-        };
-        timer.scheduleAtFixedRate(timerTask, 1000, 1000);
-    }
+
 
     private static void resetTimer() {
-        timerTask.cancel(); // Cancel the current task
-        remainingTime = 30; // Reset the remaining time to 30 seconds
-        startTimer(); // Start a new timer task
+        timerTask.cancel();
+        remainingTime = 30;
+        startTimer();
     }
 
     private void computerMove() {
@@ -405,7 +459,6 @@ class Connect4 {
     }
 
     private void easyMove() {
-        // Simple random move
         int col;
         do {
             col = (int) (Math.random() * boardLength);
@@ -433,7 +486,7 @@ class Connect4 {
 
     private int minimax(Color[][] board, int depth, boolean isMaximizing, int alpha, int beta) {
         if (depth == 0 || gameDone) {
-            return evaluateBoard(board); // Evaluate the board state
+            return evaluateBoard(board);
         }
 
         if (isMaximizing) {
@@ -455,7 +508,7 @@ class Connect4 {
             for (int col = 0; col < boardLength; col++) {
                 if (board[col][0] == Color.WHITE) {
                     int row = getNextOpenRow(board, col);
-                    board[col][row] = players[(turn + 1) % players.length]; // Place the opponent's piece
+                    board[col][row] = players[(turn + 1) % players.length];
                     int eval = minimax(board, depth - 1, true, alpha, beta);
                     board[col][row] = Color.WHITE;
                     minEval = Math.min(minEval, eval);
@@ -478,7 +531,6 @@ class Connect4 {
     }
 
     private boolean isTerminalNode(Color[][] board) {
-        // Check for a win or if the board is full
         for (int col = 0; col < boardLength; col++) {
             for (int row = 0; row < boardHeight; row++) {
                 if (board[col][row] == Color.WHITE) {
@@ -494,7 +546,6 @@ class Connect4 {
     private int countConsecutive(Color[][] board, int col, int row, Color player) {
         int count = 0;
 
-        // Horizontal
         for (int i = 0; i < 4 && col + i < boardLength; i++) {
             if (board[col + i][row] == player) count++;
         }
@@ -504,7 +555,6 @@ class Connect4 {
     private int evaluateBoard(Color[][] board) {
         int score = 0;
 
-        // Horizontal, vertical, and diagonal evaluations
         for (int col = 0; col < boardLength; col++) {
             for (int row = 0; row < boardHeight; row++) {
                 if (board[col][row] == players[turn]) {
@@ -518,7 +568,6 @@ class Connect4 {
     }
 
     private boolean checkWin(int col, int row) {
-        // Check if the current move wins the game
         PointPair pair = search(board, col, row);
         return pair != null;
     }
