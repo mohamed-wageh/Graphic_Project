@@ -17,6 +17,8 @@ public class MainMenu {
         createMenu();
     }
 
+
+
     private void createMenu() {
         mainMenuFrame = new JFrame("Connect4 - Main Menu");
         mainMenuFrame.setSize(800, 800);
@@ -85,6 +87,7 @@ public class MainMenu {
         });
 
         // Instructions Button
+        // Instructions Button
         JButton instructionsButton = new JButton("Instructions");
         styleButton(instructionsButton, new Color(34, 139, 34));
         gbc.gridx = 0;
@@ -94,11 +97,11 @@ public class MainMenu {
         instructionsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new Instructions(game);
+                new Instructions(connect4Game, game); // Pass connect4Game and game to Instructions
                 mainMenuFrame.dispose();
-
             }
         });
+
 
         mainPanel.add(titleLabel, BorderLayout.NORTH);
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
