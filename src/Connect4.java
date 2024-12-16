@@ -1,3 +1,5 @@
+import com.sun.opengl.util.GLUT;
+
 import javax.media.opengl.GL;
 import java.awt.*;
 import java.util.Arrays;
@@ -23,6 +25,7 @@ class Connect4 {
     enum Difficulty { EASY, MEDIUM, HARD }
     private static Mode currentMode;
     private static Difficulty currentDifficulty;
+
 
     static {
         int initialWidth = 800;
@@ -80,7 +83,6 @@ class Connect4 {
         startTimer();
     }
 
-
     public void draw(GL gl) {
         // Draw the frame for the board
         if (gameDone) {
@@ -115,17 +117,25 @@ class Connect4 {
             }
         }
 
-        if (!gameDone) { // Draw hover piece if game is not done
-            gl.glColor3f(turn == 0 ? 1f : 1f, turn == 0 ? 1f : 0f, 0f); // Yellow or Red based on turn
-            drawCircle(gl, hoverX + widthUnit / 2, heightUnit / 2, widthUnit / 2 - 5); // Draw hover piece at top of column
+        if (!gameDone) { // Draw hover piece if game is not done and it's the player's turn
+            if (currentMode == Mode.PLAYER_VS_PLAYER || turn == 0) { // Only show hover for player 1 in PLAYER_VS_COMPUTER mode
+                gl.glColor3f(turn == 0 ? 1f : 1f, turn == 0 ? 1f : 0f, 0f); // Yellow or Red based on turn
+                drawCircle(gl, hoverX + widthUnit / 2, heightUnit / 2, widthUnit / 2 - 5); // Draw hover piece at top of column
+            }
         } else if (p1 != null && p2 != null) {
             drawWinningLine(gl); // Draw the winning line if game is done
         }
 
-        drawTimer(gl); // Draw the timer
 
+        drawTurnMessage(gl);
+        drawTimer(gl); // Draw the timer
         drawPauseButton(gl); // Draw the pause button on the top right
+
+        // Draw the current game mode and turn information at the top
     }
+
+
+
     // Check iconSize and position to make sure they are not off-screen
     private void drawPauseButton(GL gl) {
         int iconSize = 30; // Size of the pause icon
@@ -215,6 +225,9 @@ class Connect4 {
 
     public void drop() {
         int column = hoverX / widthUnit - 1;
+        if (currentMode == Mode.PLAYER_VS_COMPUTER && turn == 1) {
+            return; // Do nothing if it's the computer's turn
+        }
         if (board[column][0] != Color.WHITE) return;
 
         new Thread(() -> {
@@ -224,7 +237,7 @@ class Connect4 {
                 row = i;
                 board[column][i] = color;
                 try {
-                    Thread.sleep(200);
+                    Thread.sleep(200); // Animate the piece falling
                 } catch (Exception ignored) {
                 }
                 board[column][i] = Color.WHITE;
@@ -237,16 +250,45 @@ class Connect4 {
         }).start();
 
         try {
-            Thread.sleep(100);
+            Thread.sleep(100); // Short delay before checking if the game is done
         } catch (Exception ignored) {
         }
+
         if (gameDone) return;
         turn = (turn + 1) % players.length;
         resetTimer(); // Reset the timer after a move
 
         if (currentMode == Mode.PLAYER_VS_COMPUTER && turn == 1) {
-            computerMove();
+            // Wait 3 seconds after the player's move before AI plays
+            new Thread(() -> {
+                try {
+                    Thread.sleep(1500); // 3-second delay before AI's turn
+                    computerMove();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
         }
+    }
+
+    private void drawTurnMessage(GL gl) {
+        String message;
+        if (currentMode == Mode.PLAYER_VS_PLAYER) {
+            message = "Player " + (turn + 1) + "'s turn"; // Display Player 1 or Player 2's turn
+        } else if (currentMode == Mode.PLAYER_VS_COMPUTER) {
+            if (turn == 0) {
+                message = "Your turn"; // If it's the player's turn
+            } else {
+                message = "Computer's turn"; // If it's the computer's turn
+            }
+        } else {
+            message = "Unknown mode"; // In case there's an issue
+        }
+        GLUT glut = new GLUT();
+        // Display the message at the top of the screen
+        gl.glColor3f(1f, 1f, 1f); // White color for text
+        gl.glRasterPos2f((float) WIDTH / 2 - 50, HEIGHT - 30); // Position the message at the top center
+        glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, message); // Render the text (you can use any OpenGL font rendering method here)
     }
 
     private void checkConnect(int x, int y) {
