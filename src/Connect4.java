@@ -185,6 +185,7 @@ class Connect4 {
         }
     }
 
+
     private void drawTimer(GL gl) {
         String timeText = "Time: " + remainingTime + "s";
         gl.glColor3f(1f, 1f, 1f); // Set the text color to white
