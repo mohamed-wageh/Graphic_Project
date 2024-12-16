@@ -185,13 +185,12 @@ class Connect4 {
 
     private void drawTimer(GL gl) {
         String timeText = "Time: " + remainingTime + "s";
-        // Set the color to white for the timer text
-        gl.glColor3f(1f, 1f, 1f);
-        // Draw the timer text at the top of the screen
-        // You can use a text rendering library like GLUT or another method to draw text in OpenGL
-        // For example, using GLUT:
-        // GLUT.glutBitmapString(GLUT.BITMAP_HELVETICA_18, timeText);
+        GLUT glut = new GLUT();
+        gl.glColor3f(1f, 1f, 1f); // Set the color to white
+        gl.glRasterPos2f(WIDTH / 2 - 50, HEIGHT - 40); // Position the text
+        glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, timeText); // Render the text
     }
+
 
     public void hover(int x) {
         x -= x % widthUnit;
@@ -382,7 +381,7 @@ class Connect4 {
                 }
             }
         };
-        timer.scheduleAtFixedRate(timerTask, 1000, 1000); // Schedule the task to run every second
+        timer.scheduleAtFixedRate(timerTask, 1000, 1000);
     }
 
     private static void resetTimer() {
@@ -475,7 +474,7 @@ class Connect4 {
                 return row;
             }
         }
-        return -1; // Should never happen if called correctly
+        return -1;
     }
 
     private boolean isTerminalNode(Color[][] board) {

@@ -77,7 +77,16 @@ public class Game extends JFrame {
     }
 
     private void showPauseMenu() {
-//        pauseMenu = new PauseMenu(this);
+        if (pauseMenu == null) {
+            pauseMenu = new JDialog(this, "Paused", true);
+            pauseMenu.setSize(300, 200);
+            pauseMenu.setLayout(new BorderLayout());
+            pauseMenu.setLocationRelativeTo(this);
+
+            JButton resumeButton = new JButton("Resume");
+            resumeButton.addActionListener(e -> resumeGame());
+            pauseMenu.add(resumeButton, BorderLayout.CENTER);
+        }
         pauseMenu.setVisible(true);
     }
 }
