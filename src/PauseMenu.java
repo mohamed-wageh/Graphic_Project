@@ -12,6 +12,9 @@ public class PauseMenu {
         createPauseMenu();
     }
 
+    public void showPauseMenu() {
+        pauseMenu.setVisible(true);
+    }
     private void createPauseMenu() {
         pauseMenu = new JDialog(game, "Game Paused", true);
         pauseMenu.setSize(300, 200);

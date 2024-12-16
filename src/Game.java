@@ -17,6 +17,7 @@ public class Game extends JFrame {
 
     public Game() {
         connect4Game = new Connect4();
+
         showMainMenu();
     }
 

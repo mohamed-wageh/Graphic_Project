@@ -17,13 +17,15 @@ class Connect4 {
     private static float animationProgress; // Progress of the animation
     private static Timer timer; // Timer for the turn
     private static TimerTask timerTask; // TimerTask for the turn
-    private static int remainingTime; // Remaining time in seconds
+    private static int remainingTime =30; // Remaining time in seconds
     private static int player1Wins, player2Wins; // Track wins for best of 3 and best of 5
     private static int roundsToWin; // Number of rounds needed to win
 
     enum Mode { PLAYER_VS_PLAYER, PLAYER_VS_COMPUTER }
     enum Difficulty { EASY, MEDIUM, HARD }
     private static Mode currentMode;
+
+
     private static Difficulty currentDifficulty;
 
 
@@ -66,7 +68,7 @@ class Connect4 {
         roundsToWin = rounds;
     }
 
-    public void resetGame() {
+    public static void resetGame() {
         for (Color[] colors : board) {
             Arrays.fill(colors, Color.WHITE);
         }
@@ -185,13 +187,13 @@ class Connect4 {
 
     private void drawTimer(GL gl) {
         String timeText = "Time: " + remainingTime + "s";
-        // Set the color to white for the timer text
-        gl.glColor3f(1f, 1f, 1f);
-        // Draw the timer text at the top of the screen
-        // You can use a text rendering library like GLUT or another method to draw text in OpenGL
-        // For example, using GLUT:
-        // GLUT.glutBitmapString(GLUT.BITMAP_HELVETICA_18, timeText);
+        gl.glColor3f(1f, 1f, 1f); // Set the text color to white
+        GLUT glut = new GLUT();
+        gl.glRasterPos2f(50, HEIGHT - 30); // Position the timer on the screen
+        glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, timeText); // Render the timer text
     }
+
+
 
     public void hover(int x) {
         x -= x % widthUnit;
@@ -255,14 +257,14 @@ class Connect4 {
         }
 
         if (gameDone) return;
-        turn = (turn + 1) % players.length;
-        resetTimer(); // Reset the timer after a move
+        turn = (turn + 1) % players.length; // Switch turns
+        resetTimer(); // Reset the timer for the new turn
 
         if (currentMode == Mode.PLAYER_VS_COMPUTER && turn == 1) {
-            // Wait 3 seconds after the player's move before AI plays
+            // Wait before AI plays
             new Thread(() -> {
                 try {
-                    Thread.sleep(1500); // 3-second delay before AI's turn
+                    Thread.sleep(1500); // AI delay
                     computerMove();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -270,6 +272,7 @@ class Connect4 {
             }).start();
         }
     }
+
 
     private void drawTurnMessage(GL gl) {
         String message;
@@ -291,7 +294,7 @@ class Connect4 {
         glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, message); // Render the text (you can use any OpenGL font rendering method here)
     }
 
-    private void checkConnect(int x, int y) {
+    private static void checkConnect(int x, int y) {
         if (gameDone) return;
 
         PointPair pair = search(board, x, y);
@@ -322,7 +325,7 @@ class Connect4 {
         }
     }
 
-    private PointPair search(Color[][] arr, int i, int j) {
+    private static PointPair search(Color[][] arr, int i, int j) {
         Color color = arr[i][j];
         int left, right, up, down;
 
@@ -369,29 +372,29 @@ class Connect4 {
         return null;
     }
 
-    private static void startTimer() {
-        timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                if (!gameDone) {
-                    remainingTime--;
-                    if (remainingTime <= 0) {
-                        gameDone = true;
-                        System.out.println("Player " + (turn + 1) % players.length + " wins by timeout!");
-                    }
-                }
-            }
-        };
-        timer.scheduleAtFixedRate(timerTask, 1000, 1000); // Schedule the task to run every second
-    }
+//    private static void startTimer() {
+//        timerTask = new TimerTask() {
+//            @Override
+//            public void run() {
+//                if (!gameDone) {
+//                    remainingTime--;
+//                    if (remainingTime <= 0) {
+//                        gameDone = true;
+//                        System.out.println("Player " + (turn + 1) % players.length + " wins by timeout!");
+//                    }
+//                }
+//            }
+//        };
+//        timer.scheduleAtFixedRate(timerTask, 1000, 1000); // Schedule the task to run every second
+//    }
 
-    private static void resetTimer() {
-        timerTask.cancel(); // Cancel the current task
-        remainingTime = 30; // Reset the remaining time to 30 seconds
-        startTimer(); // Start a new timer task
-    }
+//    private static void resetTimer() {
+//        timerTask.cancel(); // Cancel the current task
+//        remainingTime = 30; // Reset the remaining time to 30 seconds
+//        startTimer(); // Start a new timer task
+//    }
 
-    private void computerMove() {
+    private static void computerMove() {
         switch (currentDifficulty) {
             case EASY:
                 easyMove();
@@ -405,7 +408,7 @@ class Connect4 {
         }
     }
 
-    private void easyMove() {
+    private static void easyMove() {
         // Simple random move
         int col;
         do {
@@ -414,7 +417,7 @@ class Connect4 {
         dropPiece(col);
     }
 
-    private void minimaxMove(int depth) {
+    private static void minimaxMove(int depth) {
         int bestScore = Integer.MIN_VALUE;
         int bestCol = -1;
         for (int col = 0; col < boardLength; col++) {
@@ -432,7 +435,7 @@ class Connect4 {
         dropPiece(bestCol);
     }
 
-    private int minimax(Color[][] board, int depth, boolean isMaximizing, int alpha, int beta) {
+    private static int minimax(Color[][] board, int depth, boolean isMaximizing, int alpha, int beta) {
         if (depth == 0 || gameDone) {
             return evaluateBoard(board); // Evaluate the board state
         }
@@ -469,7 +472,7 @@ class Connect4 {
     }
 
 
-    private int getNextOpenRow(Color[][] board, int col) {
+    private static int getNextOpenRow(Color[][] board, int col) {
         for (int row = 0; row < boardHeight; row++) {
             if (board[col][row] == Color.WHITE) {
                 return row;
@@ -478,7 +481,7 @@ class Connect4 {
         return -1; // Should never happen if called correctly
     }
 
-    private boolean isTerminalNode(Color[][] board) {
+    private static boolean isTerminalNode(Color[][] board) {
         // Check for a win or if the board is full
         for (int col = 0; col < boardLength; col++) {
             for (int row = 0; row < boardHeight; row++) {
@@ -492,7 +495,7 @@ class Connect4 {
         }
         return true;
     }
-    private int countConsecutive(Color[][] board, int col, int row, Color player) {
+    private static int countConsecutive(Color[][] board, int col, int row, Color player) {
         int count = 0;
 
         // Horizontal
@@ -502,7 +505,7 @@ class Connect4 {
 
         return count;
     }
-    private int evaluateBoard(Color[][] board) {
+    private static int evaluateBoard(Color[][] board) {
         int score = 0;
 
         // Horizontal, vertical, and diagonal evaluations
@@ -518,13 +521,13 @@ class Connect4 {
         return score;
     }
 
-    private boolean checkWin(int col, int row) {
+    private static boolean checkWin(int col, int row) {
         // Check if the current move wins the game
         PointPair pair = search(board, col, row);
         return pair != null;
     }
 
-    private void dropPiece(int column) {
+    private static void dropPiece(int column) {
         if (board[column][0] != Color.WHITE) return;
 
         new Thread(() -> {
@@ -567,4 +570,64 @@ class Connect4 {
             p2 = new Point(x2, y2);
         }
     }
+    private static void startTimer() {
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                if (!gameDone && remainingTime > 0) {
+                    remainingTime--; // Decrease the counter by 1 each second
+                    System.out.println("Remaining time: " + remainingTime + " seconds"); // Debugging: Log the time left
+                    if (remainingTime <= 0) {
+                        // Timer runs out: handle timeout logic
+                        gameDone = true;
+                        System.out.println("Player " + (turn + 1) + " loses by timeout!");
+
+                        // Award win to the other player
+                        if (turn == 0) {
+                            player2Wins++;
+                        } else {
+                            player1Wins++;
+                        }
+
+                        // Check if someone has won the series
+                        if (player1Wins >= roundsToWin || player2Wins >= roundsToWin) {
+                            System.out.println("Player " + (player1Wins >= roundsToWin ? "1" : "2") + " wins the series!");
+                            resetGame(); // Reset the game for a new series
+                        } else {
+                            resetGame(); // Reset for the next round
+                        }
+                    }
+                }
+            }
+        };
+        timer.scheduleAtFixedRate(timerTask, 1000, 1000); // Runs every second
+    }
+
+    private static void resetTimer() {
+        if (timerTask != null) {
+            timerTask.cancel(); // Stop the current timer task
+        }
+        remainingTime = 30; // Reset the counter to 30 seconds
+        startTimer(); // Start the timer for the new turn
+    }
+
+
+    private static void timerExpired() {
+        System.out.println("Player " + (turn + 1) + " ran out of time!");
+        // Switch turn to the other player
+        turn = (turn + 1) % players.length;
+        resetTimer(); // Reset the timer for the next player
+
+        // Handle computer's move if in Player vs Computer mode
+        if (currentMode == Mode.PLAYER_VS_COMPUTER && turn == 1) {
+            computerMove();
+        }
+
+        // Check if the new turn results in a win (optional)
+        if (isTerminalNode(board)) {
+            gameDone = true;
+            System.out.println("Player " + (turn + 1) + " wins due to timer expiration!");
+        }
+}
+
 }
