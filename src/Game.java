@@ -79,6 +79,8 @@ public class Game extends JFrame {
 
     private void showPauseMenu() {
 //        pauseMenu = new PauseMenu(this);
+
+
         pauseMenu.setVisible(true);
     }
 }
