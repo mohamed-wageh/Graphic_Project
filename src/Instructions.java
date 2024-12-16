@@ -1,13 +1,16 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class Instructions {
-    private JFrame instructionsFrame;
+    private final Connect4 connect4Game;
     private Game game;
+    private JFrame instructionsFrame;
 
-    public Instructions(Game game) {
+    public Instructions(Connect4 connect4Game, Game game) {
         this.game = game;
+        this.connect4Game = connect4Game;
         createInstructionsFrame();
     }
 
@@ -65,9 +68,14 @@ public class Instructions {
 
         // Back Button
         JButton backButton = new JButton("Back");
-        styleButton(backButton, new Color(255, 69, 0)); // Red color for "Back"
-        backButton.addActionListener((ActionEvent e) -> instructionsFrame.dispose());
-
+        styleButton(backButton, new Color(255, 69, 0));
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                instructionsFrame.dispose();
+                new MainMenu(connect4Game, game);
+            }
+        });
         // Bottom panel for the button
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.setOpaque(false);

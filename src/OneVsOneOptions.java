@@ -53,7 +53,7 @@ public class OneVsOneOptions {
         oneRoundButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setGameModeAndStart(Connect4.Mode.PLAYER_VS_PLAYER, optionsFrame);
+                setGameModeAndStart(Connect4.Mode.PLAYER_VS_PLAYER, 1, optionsFrame);
             }
         });
 
@@ -66,7 +66,7 @@ public class OneVsOneOptions {
         bestOf3Button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                setGameModeAndStart(Connect4.Mode.BEST_OF_3, optionsFrame);
+                setGameModeAndStart(Connect4.Mode.PLAYER_VS_PLAYER, 3, optionsFrame);
             }
         });
 
@@ -79,7 +79,7 @@ public class OneVsOneOptions {
         bestOf5Button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                setGameModeAndStart(Connect4.Mode.BEST_OF_5, optionsFrame);
+                setGameModeAndStart(Connect4.Mode.PLAYER_VS_PLAYER, 5, optionsFrame);
             }
         });
 
@@ -104,10 +104,10 @@ public class OneVsOneOptions {
         optionsFrame.setVisible(true);
     }
 
-    private void setGameModeAndStart(Connect4.Mode mode, JFrame optionsFrame) {
+    // Modified to accept roundsToWin as a parameter
+    private void setGameModeAndStart(Connect4.Mode mode, int roundsToWin, JFrame optionsFrame) {
         connect4Game.setMode(mode);
-
-        // Assuming Player 1 and Player 2 are set for Player vs Player mode.
+        connect4Game.setRoundsToWin(roundsToWin);
 
         // Start the game
         game.startGame();
