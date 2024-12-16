@@ -343,8 +343,8 @@ class Connect4 {
     }
 
     private int minimax(Color[][] board, int depth, boolean isMaximizing, int alpha, int beta) {
-        if (depth == 0 || isTerminalNode(board)) {
-            return evaluateBoard(board);
+        if (depth == 0 || gameDone) {
+            return evaluateBoard(board); // Evaluate the board state
         }
 
         if (isMaximizing) {
@@ -357,9 +357,7 @@ class Connect4 {
                     board[col][row] = Color.WHITE;
                     maxEval = Math.max(maxEval, eval);
                     alpha = Math.max(alpha, eval);
-                    if (beta <= alpha) {
-                        break;
-                    }
+                    if (beta <= alpha) break;
                 }
             }
             return maxEval;
@@ -368,19 +366,18 @@ class Connect4 {
             for (int col = 0; col < boardLength; col++) {
                 if (board[col][0] == Color.WHITE) {
                     int row = getNextOpenRow(board, col);
-                    board[col][row] = players[(turn + 1) % players.length];
+                    board[col][row] = players[(turn + 1) % players.length]; // Place the opponent's piece
                     int eval = minimax(board, depth - 1, true, alpha, beta);
                     board[col][row] = Color.WHITE;
                     minEval = Math.min(minEval, eval);
                     beta = Math.min(beta, eval);
-                    if (beta <= alpha) {
-                        break;
-                    }
+                    if (beta <= alpha) break;
                 }
             }
             return minEval;
         }
     }
+
 
     private int getNextOpenRow(Color[][] board, int col) {
         for (int row = 0; row < boardHeight; row++) {
@@ -405,12 +402,29 @@ class Connect4 {
         }
         return true;
     }
+    private int countConsecutive(Color[][] board, int col, int row, Color player) {
+        int count = 0;
 
+        // Horizontal
+        for (int i = 0; i < 4 && col + i < boardLength; i++) {
+            if (board[col + i][row] == player) count++;
+        }
+
+        return count;
+    }
     private int evaluateBoard(Color[][] board) {
-        // Evaluate the board and return a score
-        // Positive score for maximizing player, negative for minimizing player
         int score = 0;
-        // Add your evaluation logic here
+
+        // Horizontal, vertical, and diagonal evaluations
+        for (int col = 0; col < boardLength; col++) {
+            for (int row = 0; row < boardHeight; row++) {
+                if (board[col][row] == players[turn]) {
+                    score += countConsecutive(board, col, row, players[turn]) * 10;
+                } else if (board[col][row] == players[(turn + 1) % players.length]) {
+                    score -= countConsecutive(board, col, row, players[(turn + 1) % players.length]) * 10;
+                }
+            }
+        }
         return score;
     }
 
