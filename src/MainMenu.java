@@ -17,8 +17,6 @@ public class MainMenu {
         createMenu();
     }
 
-
-
     private void createMenu() {
         mainMenuFrame = new JFrame("Connect4 - Main Menu");
         mainMenuFrame.setSize(800, 800);
@@ -66,7 +64,7 @@ public class MainMenu {
             public void actionPerformed(ActionEvent e) {
                 connect4Game = new Connect4();
                 new OneVsOneOptions(connect4Game, game);
-                mainMenuFrame.dispose();
+                resetMainMenu();
             }
         });
 
@@ -82,11 +80,10 @@ public class MainMenu {
             public void actionPerformed(ActionEvent e) {
                 connect4Game = new Connect4();
                 new DifficultySelection(connect4Game, game);
-                mainMenuFrame.dispose();
+                resetMainMenu();
             }
         });
 
-        // Instructions Button
         // Instructions Button
         JButton instructionsButton = new JButton("Instructions");
         styleButton(instructionsButton, new Color(34, 139, 34));
@@ -98,10 +95,9 @@ public class MainMenu {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new Instructions(connect4Game, game); // Pass connect4Game and game to Instructions
-                mainMenuFrame.dispose();
+                resetMainMenu();
             }
         });
-
 
         mainPanel.add(titleLabel, BorderLayout.NORTH);
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
@@ -112,7 +108,10 @@ public class MainMenu {
         mainMenuFrame.setVisible(true);
     }
 
-
+    private void resetMainMenu() {
+        // Reset the content of the existing frame by removing current content and adding the main menu again
+        cardLayout.show(cardPanel, "MainMenu");
+    }
 
     private void styleButton(JButton button, Color backgroundColor) {
         button.setBackground(backgroundColor);

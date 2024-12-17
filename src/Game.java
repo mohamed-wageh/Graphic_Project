@@ -37,7 +37,7 @@ public class Game extends JFrame {
         getContentPane().add(glCanvas, BorderLayout.CENTER);
         animator = new FPSAnimator(glCanvas, 60);
         animator.start();
-
+        connect4Game.resetGame();
         glCanvas.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -146,4 +146,5 @@ public class Game extends JFrame {
     private void quitGame() {
         System.exit(0); // Exit the application
     }
+
 }

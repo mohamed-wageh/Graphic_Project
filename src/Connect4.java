@@ -188,6 +188,21 @@ class Connect4 extends Component {
     }
 
 
+    private void drawScore(GL gl) {
+        String scoreMessage;
+        if (currentMode == Mode.PLAYER_VS_PLAYER) {
+            scoreMessage = "Player 1: " + player2Wins + " | Player 2: " + player1Wins;
+        } else if (currentMode == Mode.PLAYER_VS_COMPUTER) {
+            scoreMessage = "Player: " + player2Wins + " | Computer: " + player1Wins;
+        } else {
+            scoreMessage = "Unknown mode";
+        }
+
+        GLUT glut = new GLUT();
+        gl.glColor3f(1f, 1f, 1f); // White color for text
+        gl.glRasterPos2f(10,  55); // Position: top-left corner of the board
+        glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, scoreMessage);
+    }
     public void draw(GL gl) {
         // Draw the frame for the board
         if (gameDone) {
@@ -234,7 +249,8 @@ class Connect4 extends Component {
 
         drawTurnMessage(gl);
         drawTimer(gl); // Draw the timer
-
+        drawScore(gl);
+        drawPauseButton(gl); // Draw the pause button on the top right
     }
 
 

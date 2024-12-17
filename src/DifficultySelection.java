@@ -108,7 +108,10 @@ public class DifficultySelection {
     private void setGameModeAndStart(Connect4.Difficulty difficulty, JFrame difficultyFrame) {
         connect4Game.setDifficulty(difficulty);
         connect4Game.setMode(Connect4.Mode.PLAYER_VS_COMPUTER);
+        connect4Game.resetGame();
+        game = new Game();
         game.startGame();
+
         difficultyFrame.dispose();
     }
 
