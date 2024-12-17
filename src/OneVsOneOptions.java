@@ -66,7 +66,7 @@ public class OneVsOneOptions {
         bestOf3Button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setGameModeAndStart(Connect4.Mode.PLAYER_VS_PLAYER, 3, optionsFrame);
+                setGameModeAndStart(Connect4.Mode.PLAYER_VS_PLAYER, 2, optionsFrame);
             }
         });
 
@@ -79,7 +79,7 @@ public class OneVsOneOptions {
         bestOf5Button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setGameModeAndStart(Connect4.Mode.PLAYER_VS_PLAYER, 5, optionsFrame);
+                setGameModeAndStart(Connect4.Mode.PLAYER_VS_PLAYER, 3, optionsFrame);
             }
         });
 
