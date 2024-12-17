@@ -21,6 +21,8 @@ class Connect4 extends Component {
     private static int remainingTime; // Remaining time in seconds
     private static int player1Wins, player2Wins; // Track wins for best of 3 and best of 5
     private static int roundsToWin; // Number of rounds needed to win
+    private static int player1Lives, player2Lives; // Lives for Player 1 and Player 2
+
     JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
     enum Mode { PLAYER_VS_PLAYER, PLAYER_VS_COMPUTER }
     enum Difficulty { EASY, MEDIUM, HARD }
@@ -231,36 +233,14 @@ class Connect4 extends Component {
 
 
         drawTurnMessage(gl);
+        drawLives(gl);
         drawTimer(gl); // Draw the timer
-        drawPauseButton(gl); // Draw the pause button on the top right
 
     }
 
 
 
     // Check iconSize and position to make sure they are not off-screen
-    private void drawPauseButton(GL gl) {
-        int iconSize = 30; // Size of the pause icon
-        int x =730; // X position (top-right corner)
-        int y = 30; // Y position (top-right corner)
-
-        gl.glColor3f(1f, 1f, 1f); // White color for the icon
-        gl.glBegin(GL.GL_QUADS); // Drawing the quadrilateral for the pause button
-
-        // Draw the left rectangle part of the pause button
-        gl.glVertex2f(x, y); // Bottom-left
-        gl.glVertex2f(x + iconSize / 4, y); // Bottom-right
-        gl.glVertex2f(x + iconSize / 4, y + iconSize); // Top-right
-        gl.glVertex2f(x, y + iconSize); // Top-left
-
-        // Draw the right rectangle part of the pause button
-        gl.glVertex2f(x + iconSize / 2, y); // Bottom-left
-        gl.glVertex2f(x + 3 * iconSize / 4, y); // Bottom-right
-        gl.glVertex2f(x + 3 * iconSize / 4, y + iconSize); // Top-right
-        gl.glVertex2f(x + iconSize / 2, y + iconSize); // Top-left
-
-        gl.glEnd();
-    }
 
     private void drawCircle(GL gl, int x, int y, int radius) {
         gl.glBegin(GL.GL_TRIANGLE_FAN);
@@ -301,27 +281,8 @@ class Connect4 extends Component {
         hoverX = x;
         System.out.println("Hover: hoverX = " + hoverX);
     }
-    private boolean isPauseClicked(int mouseX, int mouseY) {
-        int iconSize = 40;
-        int x = WIDTH - iconSize - 10;
-        int y = HEIGHT - iconSize - 10;
 
-        return mouseX >= x && mouseX <= x + iconSize && mouseY >= y && mouseY <= y + iconSize;
-    }
-    private boolean isPaused = false;
 
-    public void togglePause(int mouseX, int mouseY) {
-        if (isPauseClicked(mouseX, mouseY)) {
-            isPaused = !isPaused;
-            if (isPaused) {
-                System.out.println("Game Paused!");
-                timer.cancel();
-            } else {
-                System.out.println("Game Resumed!");
-                startTimer();
-            }
-        }
-    }
 
     public void drop() {
         int column = hoverX / widthUnit - 1;
@@ -371,6 +332,8 @@ class Connect4 extends Component {
         }
     }
 
+
+
     private void drawTurnMessage(GL gl) {
         String message;
         if (currentMode == Mode.PLAYER_VS_PLAYER) {
@@ -389,6 +352,61 @@ class Connect4 extends Component {
         gl.glRasterPos2f(10, 30);
         glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, message);
     }
+    private void drawLives(GL gl) {
+        // Initialize message based on the mode
+        String livesMessage;
+        if (currentMode == Mode.PLAYER_VS_PLAYER || currentMode == Mode.PLAYER_VS_COMPUTER) {
+            livesMessage = "Lives: ";
+        } else {
+            livesMessage = "Unknown Mode";
+        }
+
+        // Only show lives if roundsToWin is 2 (Best of 3) or 3 (Best of 5)
+        if (roundsToWin == 1) {
+            return; // Don't show lives if it's a single round match
+        }
+
+        // Determine the maximum number of lives based on the best-of mode
+        int maxLives = (roundsToWin == 3) ? 3 : 5; // For best of 3, max lives are 3, for best of 5, max lives are 5
+
+        // Build the visual representation of lives using only "1"s for remaining lives
+        StringBuilder player1LivesDisplay = new StringBuilder();
+        StringBuilder player2LivesDisplay = new StringBuilder();
+
+        // Add "1" for each remaining life and "0" for lost lives
+        for (int i = 0; i < maxLives; i++) {
+            if (i < player1Lives) {
+                player1LivesDisplay.append("0 "); // Use "1" for each remaining life
+            } else {
+                player1LivesDisplay.append("1 "); // Use "0" for lost lives (if player has lost a life)
+            }
+
+            if (i < player2Lives) {
+                player2LivesDisplay.append("0 "); // Same for Player 2
+            } else {
+                player2LivesDisplay.append("1 ");
+            }
+        }
+
+        // Draw the lives for both players
+        GLUT glut = new GLUT();
+        gl.glColor3f(1f, 1f, 1f); // Set text color to white
+
+        // Draw Player 1 lives (ensuring 3 ones for Best of 3, or 5 ones for Best of 5)
+        gl.glRasterPos2f(210, 30);
+        glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, "Player 1: " + player1LivesDisplay.toString().trim());
+
+        // Draw Player 2 lives (if Player vs Computer, display Computer)
+        gl.glRasterPos2f(380, 30);
+        if (currentMode == Mode.PLAYER_VS_COMPUTER) {
+            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, "Computer: " + player2LivesDisplay.toString().trim());
+        } else {
+            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, "Player 2: " + player2LivesDisplay.toString().trim());
+        }
+    }
+
+
+
 
 
 
