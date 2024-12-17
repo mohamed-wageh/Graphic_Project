@@ -109,7 +109,8 @@ public class OneVsOneOptions {
         connect4Game.setMode(mode);
         connect4Game.setRoundsToWin(roundsToWin);
 
-        // Start the game
+        connect4Game.resetGame();
+        game = new Game();
         game.startGame();
 
         // Close the options frame and start the game.
