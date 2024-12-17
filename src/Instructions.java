@@ -47,16 +47,16 @@ public class Instructions {
 
         addStyledInstruction(instructionsContentPanel, "• Welcome to Connect 4!", boldFont, Color.WHITE, true);
         addStyledInstruction(instructionsContentPanel, "   - Each player takes turns dropping colorful discs into one of 7 columns.", regularFont, Color.WHITE, false);
-        addStyledInstruction(instructionsContentPanel, "   - The discs stack up at the lowest available slot in that column.", regularFont, Color.WHITE, false);
+        addStyledInstruction(instructionsContentPanel, "   - The discs stack up at the lowest available slot in that columnn.", regularFont, Color.WHITE, false);
         addStyledInstruction(instructionsContentPanel, "   - Use the mouse to select a column to drop a disc", regularFont, Color.WHITE, false);
         addStyledInstruction(instructionsContentPanel, "   - Press ESC to pause the game.", regularFont, Color.WHITE, false);
 
         addStyledInstruction(instructionsContentPanel, "   - Your mission: connect FOUR discs in a row horizontally, vertically, or diagonally to win!", regularFont, Color.WHITE, false);
-        addStyledInstruction(instructionsContentPanel, "   - Hurry! You have only 30 seconds per turn to make your move.", boldFont, Color.WHITE, true);
+        addStyledInstruction(instructionsContentPanel, "   - Hurry! You have only 30 seconds per turn to make your move.", regularFont, Color.WHITE, true);
         addStyledInstruction(instructionsContentPanel, "• Modes:", boldFont, Color.WHITE, true);
         addStyledInstruction(instructionsContentPanel, "   - Player vs Player: Play one round, Best of 3, or Best of 5!", regularFont, Color.WHITE, false);
         addStyledInstruction(instructionsContentPanel, "   - Player vs AI: Challenge the computer on Easy, Medium, or Hard.", regularFont, Color.WHITE, false);
-        addStyledInstruction(instructionsContentPanel, "- Get creative! Winning requires careful planning and a touch of trickery.", regularFont, Color.WHITE, false);
+        addStyledInstruction(instructionsContentPanel, "- Get creative! Winning requires careful planning and a touch of trickery.", regularFont, Color.WHITE, true);
 
         // Add the instructions panel to a scrollable view
         JScrollPane instructionsScrollPane = new JScrollPane(instructionsContentPanel);

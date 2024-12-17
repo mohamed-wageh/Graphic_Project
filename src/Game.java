@@ -82,28 +82,67 @@ public class Game extends JFrame {
 
     private void showPauseMenu() {
         if (pauseMenu == null) {
-            pauseMenu = new JDialog(this, "Paused", true);
-            pauseMenu.setSize(300, 250);
+            // Create the pause menu dialog
+            pauseMenu = new JDialog(this, "Game Paused", true);
+            pauseMenu.setSize(400, 300);
             pauseMenu.setLocationRelativeTo(this);
+            pauseMenu.setLayout(new GridBagLayout());
+            pauseMenu.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-            // Resume Button
-            JButton resumeButton = new JButton("Resume");
+            // Set dialog background color
+            pauseMenu.getContentPane().setBackground(new Color(30, 30, 30));
+
+            // Create a label for the title
+            JLabel titleLabel = new JLabel(" Game Paused");
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+            titleLabel.setForeground(Color.WHITE);
+
+            // Style helper for buttons
+            JButton resumeButton = createStyledButton(" Resume", Color.GREEN);
+            JButton mainMenuButton = createStyledButton(" Main Menu", Color.ORANGE);
+            JButton quitButton = createStyledButton(" Quit Game", Color.RED);
+
+            // Add button actions
             resumeButton.addActionListener(e -> resumeGame());
-            pauseMenu.add(resumeButton, BorderLayout.NORTH);
-
-            // Main Menu Button
-            JButton mainMenuButton = new JButton("Main Menu");
             mainMenuButton.addActionListener(e -> showMainMenu());
-            pauseMenu.add(mainMenuButton, BorderLayout.CENTER);
-
-            // Quit Game Button
-            JButton quitButton = new JButton("Quit Game");
             quitButton.addActionListener(e -> quitGame());
-            pauseMenu.add(quitButton, BorderLayout.SOUTH);
+
+            // Add components using GridBagLayout
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(10, 10, 10, 10);
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.gridwidth = 1;
+            gbc.fill = GridBagConstraints.CENTER;
+
+            // Add title
+            pauseMenu.add(titleLabel, gbc);
+
+            // Add buttons
+            gbc.gridy = 1;
+            pauseMenu.add(resumeButton, gbc);
+
+            gbc.gridy = 2;
+            pauseMenu.add(mainMenuButton, gbc);
+
+            gbc.gridy = 3;
+            pauseMenu.add(quitButton, gbc);
         }
+
         pauseMenu.setVisible(true);
     }
 
+    // Helper method to create styled buttons
+    private JButton createStyledButton(String text, Color backgroundColor) {
+        JButton button = new JButton(text);
+        button.setBackground(backgroundColor);
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 16));
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+        button.setPreferredSize(new Dimension(200, 50));
+        return button;
+    }
     private void quitGame() {
         System.exit(0); // Exit the application
     }
