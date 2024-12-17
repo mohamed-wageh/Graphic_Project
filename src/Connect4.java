@@ -233,7 +233,6 @@ class Connect4 extends Component {
 
 
         drawTurnMessage(gl);
-        drawLives(gl);
         drawTimer(gl); // Draw the timer
 
     }
@@ -367,24 +366,24 @@ class Connect4 extends Component {
         }
 
         // Determine the maximum number of lives based on the best-of mode
-        int maxLives = (roundsToWin == 3) ? 3 : 5; // For best of 3, max lives are 3, for best of 5, max lives are 5
+        int maxLives = (roundsToWin == 2) ? 3 : 5; // For best of 3, max lives are 3, for best of 5, max lives are 5
 
-        // Build the visual representation of lives using only "1"s for remaining lives
+        // Build the visual representation of lives
         StringBuilder player1LivesDisplay = new StringBuilder();
         StringBuilder player2LivesDisplay = new StringBuilder();
 
-        // Add "1" for each remaining life and "0" for lost lives
+        // Loop to add "1" for remaining lives and "0" for lost lives
         for (int i = 0; i < maxLives; i++) {
             if (i < player1Lives) {
-                player1LivesDisplay.append("0 "); // Use "1" for each remaining life
+                player1LivesDisplay.append("1 "); // Use "1" for each remaining life
             } else {
-                player1LivesDisplay.append("1 "); // Use "0" for lost lives (if player has lost a life)
+                player1LivesDisplay.append("0 "); // Use "0" for lost lives
             }
 
             if (i < player2Lives) {
-                player2LivesDisplay.append("0 "); // Same for Player 2
+                player2LivesDisplay.append("1 "); // Same for Player 2
             } else {
-                player2LivesDisplay.append("1 ");
+                player2LivesDisplay.append("0 ");
             }
         }
 
@@ -392,19 +391,18 @@ class Connect4 extends Component {
         GLUT glut = new GLUT();
         gl.glColor3f(1f, 1f, 1f); // Set text color to white
 
-        // Draw Player 1 lives (ensuring 3 ones for Best of 3, or 5 ones for Best of 5)
-        gl.glRasterPos2f(210, 30);
-        glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, "Player 1: " + player1LivesDisplay.toString().trim());
+        // Draw Player 1 lives
+        gl.glRasterPos2f(10, HEIGHT - 40);
+        glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, "Player 1: " + player1LivesDisplay.toString());
 
-        // Draw Player 2 lives (if Player vs Computer, display Computer)
-        gl.glRasterPos2f(380, 30);
+        // Draw Player 2 lives
+        gl.glRasterPos2f(10, HEIGHT - 0);
         if (currentMode == Mode.PLAYER_VS_COMPUTER) {
-            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, "Computer: " + player2LivesDisplay.toString().trim());
+            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, "Computer: " + player2LivesDisplay.toString());
         } else {
-            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, "Player 2: " + player2LivesDisplay.toString().trim());
+            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, "Player 2: " + player2LivesDisplay.toString());
         }
     }
-
 
 
 
