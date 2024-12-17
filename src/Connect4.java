@@ -6,7 +6,9 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
-
+import javax.sound.sampled.*;
+import java.io.File;
+import java.io.IOException;
 class Connect4 extends JFrame {
     private static final int WIDTH, HEIGHT, widthUnit, heightUnit, boardLength, boardHeight;
     private static Color[][] board;
@@ -340,7 +342,7 @@ class Connect4 extends JFrame {
             board[column][row] = color;
             System.out.println("Drop: column = " + column + ", row = " + row + ", color = " + color); // Debugging statement
             checkConnect(column, row);
-
+//            playSound("path/to/sound/file.wav");
             // Check if the board is full after a move
             if (isBoardFull() && !gameDone) {
                 showDrawDialog();
@@ -370,6 +372,19 @@ class Connect4 extends JFrame {
             }).start();
         }
     }
+    private void playSound(String soundFile) {
+        try {
+            // Open the sound file as a Clip
+            File soundPath = new File(soundFile);
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundPath);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioIn);
+            clip.start();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void dropPiece(int column) {
         if (board[column][0] != Color.WHITE) return;
