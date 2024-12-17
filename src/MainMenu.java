@@ -64,7 +64,7 @@ public class MainMenu {
             public void actionPerformed(ActionEvent e) {
                 connect4Game = new Connect4();
                 new OneVsOneOptions(connect4Game, game);
-                resetMainMenu();
+                mainMenuFrame.dispose();  // Close the main menu when transitioning to another screen
             }
         });
 
@@ -80,7 +80,7 @@ public class MainMenu {
             public void actionPerformed(ActionEvent e) {
                 connect4Game = new Connect4();
                 new DifficultySelection(connect4Game, game);
-                resetMainMenu();
+                mainMenuFrame.dispose();  // Close the main menu when transitioning to another screen
             }
         });
 
@@ -95,7 +95,7 @@ public class MainMenu {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new Instructions(connect4Game, game); // Pass connect4Game and game to Instructions
-                resetMainMenu();
+                mainMenuFrame.dispose();  // Close the main menu when transitioning to another screen
             }
         });
 
@@ -106,11 +106,6 @@ public class MainMenu {
         cardPanel.add(mainPanel, "MainMenu");
         mainMenuFrame.add(cardPanel);
         mainMenuFrame.setVisible(true);
-    }
-
-    private void resetMainMenu() {
-        // Reset the content of the existing frame by removing current content and adding the main menu again
-        cardLayout.show(cardPanel, "MainMenu");
     }
 
     private void styleButton(JButton button, Color backgroundColor) {

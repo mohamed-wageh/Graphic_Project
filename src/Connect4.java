@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
-class Connect4 extends Component {
+class Connect4 extends JFrame {
     private static final int WIDTH, HEIGHT, widthUnit, heightUnit, boardLength, boardHeight;
     private static Color[][] board;
     private static Color[] players;
@@ -33,8 +33,8 @@ class Connect4 extends Component {
     static {
         int initialWidth = 800;
         int initialHeight = 800;
-        boardLength = 7;
-        boardHeight = 6;
+        boardLength = 4;
+        boardHeight = 3;
         widthUnit = initialWidth / (boardLength + 2);
         WIDTH = widthUnit * (boardLength + 2);
         heightUnit = initialHeight / (boardHeight + 2);
@@ -146,12 +146,16 @@ class Connect4 extends Component {
                     remainingTime--;
                     if (remainingTime <= 0) {
                         gameDone = true;
-                        String timeoutMessage = "Player " + (turn == 0 ? 2 : 1) + " wins by timeout!";
+                        if(currentMode == Mode.PLAYER_VS_COMPUTER){
+                            String timeoutMessage = "Game Over ,Ai wins by time out";
+                            showGameOverDialog(timeoutMessage);
 
-                        System.out.println(timeoutMessage);
-
+                        }else{
+                            String timeoutMessage = "Player " + (turn == 0 ? 2 : 1) + " wins by timeout!";
+                            showGameOverDialog(timeoutMessage);
+                            System.out.println(timeoutMessage);
+                        }
                         // Show pop-up with custom buttons
-                        showGameOverDialog("Time's up! Better luck next time.");
 
                     }
                 }
@@ -191,14 +195,16 @@ class Connect4 extends Component {
     }
 
     private void goToMainMenu(Connect4 connect4Game) {
-        // Close the current game window
-        if (currentFrame != null) {
-            currentFrame.dispose(); // Close the current window
+        // Dispose the current Connect4 game window
+        if (connect4Game != null) {
+
+            connect4Game.dispose();
         }
 
-        // Create a new instance of the MainMenu and show it
-        new MainMenu(connect4Game, null); // Launch MainMenu (null for the game, as it's a new session)
+        // Create and show the Main Menu
+        SwingUtilities.invokeLater(() -> new MainMenu(connect4Game, null));
     }
+
 
 
     private void drawScore(GL gl) {
@@ -263,7 +269,6 @@ class Connect4 extends Component {
         drawTurnMessage(gl);
         drawTimer(gl); // Draw the timer
         drawScore(gl);
-        drawPauseButton(gl); // Draw the pause button on the top right
     }
 
 
@@ -311,7 +316,6 @@ class Connect4 extends Component {
     }
 
 
-
     public void drop() {
         int column = hoverX / widthUnit - 1;
         if (currentMode == Mode.PLAYER_VS_COMPUTER && turn == 1) {
@@ -336,6 +340,13 @@ class Connect4 extends Component {
             board[column][row] = color;
             System.out.println("Drop: column = " + column + ", row = " + row + ", color = " + color); // Debugging statement
             checkConnect(column, row);
+
+            // Check if the board is full after a move
+            if (isBoardFull() && !gameDone) {
+                showDrawDialog();
+                gameDone = true;
+                return;
+            }
         }).start();
 
         try {
@@ -351,7 +362,7 @@ class Connect4 extends Component {
             // Wait 3 seconds after the player's move before AI plays
             new Thread(() -> {
                 try {
-                    Thread.sleep(1500); // 3-second delay before AI's turn
+                    Thread.sleep(1500); // 1.5-second delay before AI's turn
                     computerMove();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -359,6 +370,69 @@ class Connect4 extends Component {
             }).start();
         }
     }
+
+    // Method to check if the board is full
+    private boolean isBoardFull() {
+        for (int col = 0; col < board.length; col++) {
+            if (board[col][0] == Color.WHITE) {
+                return false; // If any column has an empty top cell, the board is not full
+            }
+        }
+        return true;
+    }
+
+    // Method to show a draw dialog
+    private void showDrawDialog() {
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            if (roundsToWin == 1) { // Single round game
+                int option = JOptionPane.showOptionDialog(
+                        null,
+                        "It's a draw! The board is full.",
+                        "Game Over",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.INFORMATION_MESSAGE,
+                        null,
+                        new Object[]{"Restart Game", "Quit Game"},
+                        "Restart Game"
+                );
+                if (option == 0) { // Restart Game
+                    resetGame();
+                } else if (option == 1) { // Quit Game
+                    System.exit(0);
+                }
+            } else { // Multi-round game
+                // Update draw round logic
+                int totalRoundsPlayed = player1Wins + player2Wins + 1; // +1 for this draw round
+                if (totalRoundsPlayed >= (roundsToWin * 2) - 1) { // Final round check
+                    String finalMessage = "The series ends in a draw! No winner.";
+                    int option = JOptionPane.showOptionDialog(
+                            null,
+                            finalMessage,
+                            "Series Over",
+                            JOptionPane.DEFAULT_OPTION,
+                            JOptionPane.INFORMATION_MESSAGE,
+                            null,
+                            new Object[]{"Restart Game", "Quit Game"},
+                            "Restart Game"
+                    );
+                    if (option == 0) { // Restart Game
+                        resetGame();
+                    } else if (option == 1) { // Quit Game
+                        System.exit(0);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "This round is a draw! Proceeding to the next round.",
+                            "Round Draw",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+                    resetGame();
+                }
+            }
+        });
+    }
+
 
 
 
