@@ -45,12 +45,10 @@ public class Game extends JFrame {
         animator.start();
         connect4Game.resetGame();
 
-        // Ensure the Connect4 window is visible when the game starts
         connect4Game.setVisible(true); // Show Connect4 frame
 
-        // Hide the menu when the game starts
         if (mainMenu != null) {
-            mainMenu.dispose(); // Dispose of the main menu when the game starts
+            mainMenu.dispose();
         }
 
         glCanvas.addKeyListener(new KeyAdapter() {
