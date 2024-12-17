@@ -342,7 +342,7 @@ class Connect4 extends JFrame {
             board[column][row] = color;
             System.out.println("Drop: column = " + column + ", row = " + row + ", color = " + color); // Debugging statement
             checkConnect(column, row);
-//            playSound("path/to/sound/file.wav");
+            playSound("C:/Users/ahmed/Downloads/wow.wav");
             // Check if the board is full after a move
             if (isBoardFull() && !gameDone) {
                 showDrawDialog();
@@ -613,6 +613,7 @@ class Connect4 extends JFrame {
 
 
 
+
     private void computerMove() {
         switch (currentDifficulty) {
             case EASY:
@@ -639,24 +640,23 @@ class Connect4 extends JFrame {
         int bestScore = Integer.MIN_VALUE;
         int bestCol = -1;
         for (int col = 0; col < boardLength; col++) {
-            if (board[col][0] == Color.WHITE) { // Check if the column is open
+            if (board[col][0] == Color.WHITE) {
                 int row = getNextOpenRow(board, col);
-                board[col][row] = players[turn]; // Make the move for the current player (AI)
+                board[col][row] = players[turn];
                 int score = minimax(board, depth - 1, false, Integer.MIN_VALUE, Integer.MAX_VALUE);
-                board[col][row] = Color.WHITE; // Undo the move
-
+                board[col][row] = Color.WHITE;
                 if (score > bestScore) {
                     bestScore = score;
                     bestCol = col;
                 }
             }
         }
-        dropPiece(bestCol); // Drop the piece in the best column found
+        dropPiece(bestCol);
     }
 
     private int minimax(Color[][] board, int depth, boolean isMaximizing, int alpha, int beta) {
         if (depth == 0 || gameDone) {
-            return evaluateBoard(board); // Base case, evaluate the board at the given depth
+            return evaluateBoard(board);
         }
 
         if (isMaximizing) {
@@ -664,12 +664,12 @@ class Connect4 extends JFrame {
             for (int col = 0; col < boardLength; col++) {
                 if (board[col][0] == Color.WHITE) {
                     int row = getNextOpenRow(board, col);
-                    board[col][row] = players[turn]; // AI's move
+                    board[col][row] = players[turn];
                     int eval = minimax(board, depth - 1, false, alpha, beta);
-                    board[col][row] = Color.WHITE; // Undo the move
+                    board[col][row] = Color.WHITE;
                     maxEval = Math.max(maxEval, eval);
                     alpha = Math.max(alpha, eval);
-                    if (beta <= alpha) break; // Beta pruning
+                    if (beta <= alpha) break;
                 }
             }
             return maxEval;
@@ -678,17 +678,18 @@ class Connect4 extends JFrame {
             for (int col = 0; col < boardLength; col++) {
                 if (board[col][0] == Color.WHITE) {
                     int row = getNextOpenRow(board, col);
-                    board[col][row] = players[(turn + 1) % players.length]; // Opponent's move
+                    board[col][row] = players[(turn + 1) % players.length];
                     int eval = minimax(board, depth - 1, true, alpha, beta);
-                    board[col][row] = Color.WHITE; // Undo the move
+                    board[col][row] = Color.WHITE;
                     minEval = Math.min(minEval, eval);
                     beta = Math.min(beta, eval);
-                    if (beta <= alpha) break; // Beta pruning
+                    if (beta <= alpha) break;
                 }
             }
             return minEval;
         }
     }
+
 
     private int getNextOpenRow(Color[][] board, int col) {
         for (int row = 0; row < boardHeight; row++) {
@@ -696,10 +697,8 @@ class Connect4 extends JFrame {
                 return row;
             }
         }
-        return -1; // If no open row is found, return -1 (invalid move)
+        return -1;
     }
-
-
 
     private boolean isTerminalNode(Color[][] board) {
         for (int col = 0; col < boardLength; col++) {
@@ -716,63 +715,27 @@ class Connect4 extends JFrame {
     }
     private int countConsecutive(Color[][] board, int col, int row, Color player) {
         int count = 0;
-        // Evaluate horizontal, vertical, and diagonal possibilities (simplified)
-        count += countInDirection(board, col, row, 1, 0, player); // Horizontal
-        count += countInDirection(board, col, row, 0, 1, player); // Vertical
-        count += countInDirection(board, col, row, 1, 1, player); // Diagonal /
-        count += countInDirection(board, col, row, 1, -1, player); // Diagonal \
+
+        for (int i = 0; i < 4 && col + i < boardLength; i++) {
+            if (board[col + i][row] == player) count++;
+        }
+
         return count;
     }
     private int evaluateBoard(Color[][] board) {
         int score = 0;
 
-        // Evaluate offensive and defensive moves
         for (int col = 0; col < boardLength; col++) {
             for (int row = 0; row < boardHeight; row++) {
                 if (board[col][row] == players[turn]) {
-                    // Reward AI for consecutive pieces (this is a simplified version)
                     score += countConsecutive(board, col, row, players[turn]) * 10;
-                    // Look for opportunities to block or create a winning line
-                    score += evaluateWinningMoves(board, col, row, players[turn]);
                 } else if (board[col][row] == players[(turn + 1) % players.length]) {
-                    // Penalize opponent's potential moves
                     score -= countConsecutive(board, col, row, players[(turn + 1) % players.length]) * 10;
-                    score -= evaluateWinningMoves(board, col, row, players[(turn + 1) % players.length]);
                 }
             }
         }
         return score;
     }
-
-
-
-    private int countInDirection(Color[][] board, int col, int row, int dCol, int dRow, Color player) {
-        int count = 0;
-        for (int i = -3; i <= 3; i++) {
-            int newCol = col + i * dCol;
-            int newRow = row + i * dRow;
-            if (newCol >= 0 && newCol < boardLength && newRow >= 0 && newRow < boardHeight) {
-                if (board[newCol][newRow] == player) {
-                    count++;
-                } else {
-                    break;
-                }
-            }
-        }
-        return count;
-    }
-
-    private int evaluateWinningMoves(Color[][] board, int col, int row, Color player) {
-        // Check for opportunities for both the player and the opponent to win (very simplified)
-        int score = 0;
-        for (int i = 0; i < 4; i++) {
-            if (row + i < boardHeight && board[col][row + i] == player) {
-                score++;
-            }
-        }
-        return score;
-    }
-
 
     private boolean checkWin(int col, int row) {
         PointPair pair = search(board, col, row);

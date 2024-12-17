@@ -1,9 +1,15 @@
 import com.sun.opengl.util.FPSAnimator;
 import javax.media.opengl.GLCanvas;
+import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
+import javax.sound.sampled.*;
+import java.io.File;
+import java.io.IOException;
 public class Game extends JFrame {
     private static Connect4 connect4Game;
     private FPSAnimator animator;
@@ -15,8 +21,26 @@ public class Game extends JFrame {
         SwingUtilities.invokeLater(Game::new);
     }
 
+
+    private void playSound(String soundFile) {
+        try {
+            // Open the sound file as a Clip
+            File soundPath = new File(soundFile);
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundPath);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioIn);
+
+            // Start the clip and loop it indefinitely
+            clip.start();
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Game() {
         showMainMenu(); // Show the main menu when starting
+        playSound("C:/Users/ahmed/Downloads/a8.wav");
         connect4Game = new Connect4();
     }
 
