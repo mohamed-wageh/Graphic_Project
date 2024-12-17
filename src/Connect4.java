@@ -151,31 +151,44 @@ class Connect4 extends Component {
                         System.out.println(timeoutMessage);
 
                         // Show pop-up with custom buttons
-                        int option = JOptionPane.showOptionDialog(
-                                null,
-                                timeoutMessage,
-                                "Game Over",
-                                JOptionPane.DEFAULT_OPTION,
-                                JOptionPane.INFORMATION_MESSAGE,
-                                null,
-                                new Object[] { "Restart Game", "Main Menu" },
-                                "Restart Game"
-                        );
+                        showGameOverDialog("Time's up! Better luck next time.");
 
-                        // Handle button clicks
-                        if (option == 0) { // Restart Game
-                            resetGame();
-                        } else if (option == 1) { // Main Menu
-//                            goToMainMenu(null);
-                        }
                     }
                 }
             }
         };
         timer.scheduleAtFixedRate(timerTask, 1000, 1000);
     }
+    public static void showGameOverDialog(String timeoutMessage) {
+        // Custom font for the message
+        JLabel messageLabel = new JLabel(timeoutMessage, JLabel.CENTER);
+        messageLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        messageLabel.setForeground(Color.RED); // Highlight the message in red
 
+        // Custom button font and styling
+        UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.BOLD, 12));
+        UIManager.put("OptionPane.buttonBackground", Color.GRAY);
+        UIManager.put("OptionPane.buttonForeground", Color.WHITE);
 
+        // Show the dialog
+        int option = JOptionPane.showOptionDialog(
+                null,
+                messageLabel,
+                "Game Over",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                new Object[]{"Restart Game", "Main Menu"}, // Custom button labels
+                "Restart Game"
+        );
+
+        // Handle user response
+        if (option == 0) {
+            System.out.println("Restart Game selected");
+        } else if (option == 1) {
+            System.out.println("Main Menu selected");
+        }
+    }
 
     private void goToMainMenu(Connect4 connect4Game) {
         // Close the current game window
