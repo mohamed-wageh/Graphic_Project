@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 public class MainMenu {
     private JFrame mainMenuFrame;
     private JPanel mainPanel;
@@ -115,5 +114,13 @@ public class MainMenu {
         button.setFocusPainted(false);
         button.setPreferredSize(new Dimension(200, 50));
         button.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
+    }
+
+    // Dispose method to close the main menu frame and free resources
+    public void dispose() {
+        if (mainMenuFrame != null) {
+            mainMenuFrame.dispose();  // Close the frame
+            mainMenuFrame = null;      // Nullify the reference to allow garbage collection
+        }
     }
 }

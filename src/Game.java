@@ -4,27 +4,33 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-
 public class Game extends JFrame {
     private static Connect4 connect4Game;
     private FPSAnimator animator;
     private boolean paused = false;
     private JDialog pauseMenu;
+    private MainMenu mainMenu; // Add a reference to the main menu
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Game::new);
     }
 
     public Game() {
+        showMainMenu(); // Show the main menu when starting
         connect4Game = new Connect4();
-        showMainMenu();
     }
 
     private void showMainMenu() {
         if (pauseMenu != null) {
             pauseMenu.dispose();
         }
-        new MainMenu(connect4Game, this);
+
+        // Hide or dispose of the main menu when the Connect4 game starts
+        if (mainMenu != null) {
+            mainMenu.dispose(); // Close the main menu if it's open
+        }
+
+        mainMenu = new MainMenu(connect4Game, this); // Create a new main menu
     }
 
     public void startGame() {
@@ -38,6 +44,15 @@ public class Game extends JFrame {
         animator = new FPSAnimator(glCanvas, 60);
         animator.start();
         connect4Game.resetGame();
+
+        // Ensure the Connect4 window is visible when the game starts
+        connect4Game.setVisible(true); // Show Connect4 frame
+
+        // Hide the menu when the game starts
+        if (mainMenu != null) {
+            mainMenu.dispose(); // Dispose of the main menu when the game starts
+        }
+
         glCanvas.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -143,8 +158,8 @@ public class Game extends JFrame {
         button.setPreferredSize(new Dimension(200, 50));
         return button;
     }
+
     private void quitGame() {
         System.exit(0); // Exit the application
     }
-
 }

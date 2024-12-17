@@ -33,8 +33,8 @@ class Connect4 extends JFrame {
     static {
         int initialWidth = 800;
         int initialHeight = 800;
-        boardLength = 4;
-        boardHeight = 3;
+        boardLength = 7;
+        boardHeight = 6;
         widthUnit = initialWidth / (boardLength + 2);
         WIDTH = widthUnit * (boardLength + 2);
         heightUnit = initialHeight / (boardHeight + 2);
@@ -54,8 +54,8 @@ class Connect4 extends JFrame {
         player1Wins = 0;
         player2Wins = 0;
         roundsToWin = 1; // Default to one round
-        startTimer();
     }
+
 
     public void setMode(Mode mode) {
         currentMode = mode;
@@ -371,6 +371,46 @@ class Connect4 extends JFrame {
         }
     }
 
+    private void dropPiece(int column) {
+        if (board[column][0] != Color.WHITE) return;
+
+        new Thread(() -> {
+            Color color = players[turn];
+            int row = 0;
+            for (int i = 0; i < board[column].length && board[column][i] == Color.WHITE; i++) {
+                row = i;
+                board[column][i] = color;
+                try {
+                    Thread.sleep(200);
+                } catch (Exception ignored) {
+                }
+                board[column][i] = Color.WHITE;
+                if (gameDone) return;
+            }
+            if (gameDone) return;
+            board[column][row] = color;
+            System.out.println("Drop: column = " + column + ", row = " + row + ", color = " + color); // Debugging statement
+            checkConnect(column, row);
+        }).start();
+
+        try {
+            Thread.sleep(100);
+        } catch (Exception ignored) {
+        }
+        if (gameDone) return;
+        turn = (turn + 1) % players.length;
+        resetTimer(); // Reset the timer after a move
+
+        if (currentMode == Mode.PLAYER_VS_COMPUTER && turn == 1) {
+            computerMove();
+        }
+    }
+    private static void resetTimer() {
+        timerTask.cancel();
+        remainingTime = 30;
+        startTimer();
+    }
+
     // Method to check if the board is full
     private boolean isBoardFull() {
         for (int col = 0; col < board.length; col++) {
@@ -557,11 +597,7 @@ class Connect4 extends JFrame {
 
 
 
-    private static void resetTimer() {
-        timerTask.cancel();
-        remainingTime = 30;
-        startTimer();
-    }
+
 
     private void computerMove() {
         switch (currentDifficulty) {
@@ -689,41 +725,6 @@ class Connect4 extends JFrame {
     private boolean checkWin(int col, int row) {
         PointPair pair = search(board, col, row);
         return pair != null;
-    }
-
-    private void dropPiece(int column) {
-        if (board[column][0] != Color.WHITE) return;
-
-        new Thread(() -> {
-            Color color = players[turn];
-            int row = 0;
-            for (int i = 0; i < board[column].length && board[column][i] == Color.WHITE; i++) {
-                row = i;
-                board[column][i] = color;
-                try {
-                    Thread.sleep(200);
-                } catch (Exception ignored) {
-                }
-                board[column][i] = Color.WHITE;
-                if (gameDone) return;
-            }
-            if (gameDone) return;
-            board[column][row] = color;
-            System.out.println("Drop: column = " + column + ", row = " + row + ", color = " + color); // Debugging statement
-            checkConnect(column, row);
-        }).start();
-
-        try {
-            Thread.sleep(100);
-        } catch (Exception ignored) {
-        }
-        if (gameDone) return;
-        turn = (turn + 1) % players.length;
-        resetTimer(); // Reset the timer after a move
-
-        if (currentMode == Mode.PLAYER_VS_COMPUTER && turn == 1) {
-            computerMove();
-        }
     }
 
     static class PointPair {
