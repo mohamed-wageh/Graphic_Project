@@ -151,30 +151,14 @@ class Connect4 extends Component {
                         System.out.println(timeoutMessage);
 
                         // Show pop-up with custom buttons
-                        int option = JOptionPane.showOptionDialog(
-                                null,
-                                timeoutMessage,
-                                "Game Over",
-                                JOptionPane.DEFAULT_OPTION,
-                                JOptionPane.INFORMATION_MESSAGE,
-                                null,
-                                new Object[] { "Restart Game", "Main Menu" },
-                                "Restart Game"
-                        );
+                        showGameOverDialog("Time's up! Better luck next time.");
 
-                        // Handle button clicks
-                        if (option == 0) { // Restart Game
-                            resetGame();
-                        } else if (option == 1) { // Main Menu
-//                            goToMainMenu(null);
-                        }
                     }
                 }
             }
         };
         timer.scheduleAtFixedRate(timerTask, 1000, 1000);
     }
-
     public static void showGameOverDialog(String timeoutMessage) {
         // Custom font for the message
         JLabel messageLabel = new JLabel(timeoutMessage, JLabel.CENTER);
