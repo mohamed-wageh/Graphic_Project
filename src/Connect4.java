@@ -35,8 +35,8 @@ class Connect4 extends JFrame {
     static {
         int initialWidth = 800;
         int initialHeight = 800;
-        boardLength = 7;
-        boardHeight = 6;
+        boardLength = 3;
+        boardHeight = 3;
         widthUnit = initialWidth / (boardLength + 2);
         WIDTH = widthUnit * (boardLength + 2);
         heightUnit = initialHeight / (boardHeight + 2);
@@ -50,7 +50,7 @@ class Connect4 extends JFrame {
         turn = 0;
         animationProgress = 0f;
         timer = new Timer();
-        remainingTime = 30; // Set initial remaining time to 30 seconds
+        remainingTime = 30;
         currentMode = Mode.PLAYER_VS_PLAYER; // Default mode
         currentDifficulty = Difficulty.EASY; // Default difficulty
         player1Wins = 0;
@@ -340,10 +340,9 @@ class Connect4 extends JFrame {
             }
             if (gameDone) return;
             board[column][row] = color;
-            System.out.println("Drop: column = " + column + ", row = " + row + ", color = " + color); // Debugging statement
+            System.out.println("Drop: column = " + column + ", row = " + row + ", color = " + color);
             checkConnect(column, row);
             playSound("C:/Users/ahmed/Downloads/wow.wav");
-            // Check if the board is full after a move
             if (isBoardFull() && !gameDone) {
                 showDrawDialog();
                 gameDone = true;

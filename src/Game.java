@@ -15,22 +15,22 @@ public class Game extends JFrame {
     private FPSAnimator animator;
     private boolean paused = false;
     private JDialog pauseMenu;
-    private MainMenu mainMenu; // Add a reference to the main menu
+    private MainMenu mainMenu;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Game::new);
+        playSound("C:/Users/ahmed/Downloads/sound.wav");
+
     }
 
 
-    private void playSound(String soundFile) {
+    private static void playSound(String soundFile) {
         try {
-            // Open the sound file as a Clip
             File soundPath = new File(soundFile);
             AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundPath);
             Clip clip = AudioSystem.getClip();
             clip.open(audioIn);
 
-            // Start the clip and loop it indefinitely
             clip.start();
             clip.loop(Clip.LOOP_CONTINUOUSLY);
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
@@ -39,22 +39,21 @@ public class Game extends JFrame {
     }
 
     public Game() {
-        showMainMenu(); // Show the main menu when starting
-        playSound("C:/Users/ahmed/Downloads/a8.wav");
+        showMainMenu();
         connect4Game = new Connect4();
     }
 
     private void showMainMenu() {
         if (pauseMenu != null) {
             pauseMenu.dispose();
+
         }
 
-        // Hide or dispose of the main menu when the Connect4 game starts
         if (mainMenu != null) {
-            mainMenu.dispose(); // Close the main menu if it's open
+            mainMenu.dispose();
         }
 
-        mainMenu = new MainMenu(connect4Game, this); // Create a new main menu
+        mainMenu = new MainMenu(connect4Game, this);
     }
 
     public void startGame() {
@@ -69,7 +68,7 @@ public class Game extends JFrame {
         animator.start();
         connect4Game.resetGame();
 
-        connect4Game.setVisible(true); // Show Connect4 frame
+        connect4Game.setVisible(true);
 
         if (mainMenu != null) {
             mainMenu.dispose();
